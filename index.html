@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="BLEU 4">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>BLEU 4</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700&display=swap');
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --border: #222222;
+      --accent: #c8a84b;
+      --green: #4caf50;
+      --red: #f44336;
+      --text: #e0d8c8;
+      --muted: #555555;
+      --font-mono: 'Share Tech Mono', monospace;
+      --font-ui: 'Barlow Condensed', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* SCANLINE OVERLAY */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.03) 2px, rgba(0,0,0,.03) 4px);
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .app { max-width: 480px; margin: 0 auto; padding: 0 0 80px; }
+
+    /* HEADER */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--accent);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      color: var(--accent);
+      letter-spacing: 3px;
+    }
+    .logo span { color: var(--muted); font-size: 11px; display: block; letter-spacing: 2px; margin-top: 1px; }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .role-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 3px 8px;
+      letter-spacing: 1px;
+    }
+    .back-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 6px 12px;
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: all .15s;
+    }
+    .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* CONTENT */
+    .content { padding: 20px 18px; }
+
+    /* LOGIN SCREEN */
+    .login-screen { padding: 40px 18px; }
+    .login-title {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      color: var(--accent);
+      letter-spacing: 4px;
+      margin-bottom: 6px;
+    }
+    .login-sub { font-size: 13px; color: var(--muted); letter-spacing: 2px; margin-bottom: 40px; font-family: var(--font-mono); }
+
+    .field { margin-bottom: 16px; }
+    .field label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+    .field input, .field select {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color .15s;
+      -webkit-appearance: none;
+    }
+    .field input:focus, .field select:focus { border-color: var(--accent); }
+    .field select option { background: var(--surface); }
+
+    .btn-primary {
+      width: 100%;
+      background: var(--accent);
+      color: #0a0a0a;
+      border: none;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 3px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all .15s;
+      margin-top: 8px;
+    }
+    .btn-primary:hover { background: #e0c060; }
+    .btn-primary:disabled { opacity: .3; cursor: not-allowed; }
+
+    .btn-secondary {
+      width: 100%;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 2px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all .15s;
+      margin-top: 8px;
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* SECTION LABEL */
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* EVENT CARDS */
+    .event-list { display: flex; flex-direction: column; gap: 2px; }
+
+    .event-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 16px;
+      cursor: pointer;
+      transition: all .15s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .event-card:hover { border-color: var(--accent); background: #161616; }
+    .event-card.past { border-left-color: var(--muted); opacity: .6; }
+
+    .event-info { flex: 1; min-width: 0; }
+    .event-title {
+      font-family: var(--font-ui);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .event-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+    .event-stats {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+      align-items: center;
+    }
+    .stat-pill {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 3px 8px;
+      border: 1px solid;
+    }
+    .stat-pill.yes { color: var(--green); border-color: var(--green); }
+    .stat-pill.no { color: var(--red); border-color: var(--red); }
+    .del-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 4px 6px;
+      transition: color .15s;
+      flex-shrink: 0;
+    }
+    .del-btn:hover { color: var(--red); }
+
+    /* EMPTY STATE */
+    .empty {
+      text-align: center;
+      padding: 60px 0;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 2px;
+    }
+    .empty-icon { font-size: 32px; margin-bottom: 16px; display: block; opacity: .3; }
+
+    /* FAB */
+    .fab {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: #0a0a0a;
+      border: none;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 3px;
+      padding: 14px 28px;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(200,168,75,.3);
+      transition: all .15s;
+      white-space: nowrap;
+    }
+    .fab:hover { background: #e0c060; box-shadow: 0 0 30px rgba(200,168,75,.5); }
+
+    /* CREATE FORM */
+    .create-header {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      color: var(--accent);
+      letter-spacing: 3px;
+      margin-bottom: 28px;
+    }
+
+    /* EVENT DETAIL */
+    .ev-header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .ev-title-big {
+      font-family: var(--font-ui);
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .ev-date-big {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 2px;
+    }
+    .ev-desc {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 8px;
+      font-family: var(--font-mono);
+      letter-spacing: 1px;
+    }
+
+    /* STATS BAR */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      margin-bottom: 20px;
+    }
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 14px 10px;
+      text-align: center;
+    }
+    .stat-num {
+      font-family: var(--font-mono);
+      font-size: 28px;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .stat-num.green { color: var(--green); }
+    .stat-num.red { color: var(--red); }
+    .stat-lbl {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* MY RSVP (member) */
+    .my-rsvp {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .my-rsvp-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 3px;
+      margin-bottom: 14px;
+    }
+    .rsvp-choice {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .rsvp-yes, .rsvp-no {
+      border: 1px solid;
+      background: transparent;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      letter-spacing: 2px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .rsvp-yes { color: var(--green); border-color: var(--green); }
+    .rsvp-yes.active, .rsvp-yes:hover { background: var(--green); color: #0a0a0a; }
+    .rsvp-no { color: var(--red); border-color: var(--red); }
+    .rsvp-no.active, .rsvp-no:hover { background: var(--red); color: white; }
+
+    /* ATTENDEE LIST */
+    .attendee-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .attendee-row:last-child { border-bottom: none; }
+    .attendee-initial {
+      width: 32px;
+      height: 32px;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .attendee-name { flex: 1; font-size: 15px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+    .attendee-status {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 3px 10px;
+      border: 1px solid;
+      letter-spacing: 1px;
+    }
+    .attendee-status.yes { color: var(--green); border-color: var(--green); }
+    .attendee-status.no { color: var(--red); border-color: var(--red); }
+    .attendee-status.pending { color: var(--muted); border-color: var(--border); }
+
+    /* ADD MEMBER (admin) */
+    .add-row { display: flex; gap: 8px; margin-bottom: 20px; }
+    .add-row input {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color .15s;
+    }
+    .add-row input:focus { border-color: var(--accent); }
+    .add-row button {
+      background: var(--accent);
+      border: none;
+      color: #0a0a0a;
+      font-family: var(--font-mono);
+      font-size: 18px;
+      padding: 0 18px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* CONNECTING */
+    .connecting {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: var(--font-mono);
+      color: var(--accent);
+      letter-spacing: 3px;
+      font-size: 13px;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .dot-flash { display: flex; gap: 6px; }
+    .dot-flash span {
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: flash 1s infinite;
+    }
+    .dot-flash span:nth-child(2) { animation-delay: .2s; }
+    .dot-flash span:nth-child(3) { animation-delay: .4s; }
+    @keyframes flash { 0%,80%,100% { opacity:.2 } 40% { opacity:1 } }
+
+    .error-msg { color: var(--red); font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px; margin-top: 8px; }
+
+    /* CODE INPUT for admin */
+    .code-hint { font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-top: 6px; }
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="connecting">
+    <div class="dot-flash"><span></span><span></span><span></span></div>
+    CONNEXION...
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, get, push, remove, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCOTja98aA-0umXrqm2c2k4frUFn6why1o",
+  authDomain: "bleu-4.firebaseapp.com",
+  databaseURL: "https://bleu-4-default-rtdb.firebaseio.com",
+  projectId: "bleu-4",
+  storageBucket: "bleu-4.firebasestorage.app",
+  messagingSenderId: "788139266954",
+  appId: "1:788139266954:web:c1896f25eb57687846ae73"
+};
+
+const ADMIN_CODE = "BLEU4ADMIN";
+
+const fbApp = initializeApp(firebaseConfig);
+const db = getDatabase(fbApp);
+
+// ── STATE ──
+let state = {
+  screen: "login",     // login | list | create | event
+  user: null,          // { name, role: admin|member }
+  events: {},
+  activeEventId: null,
+};
+
+// Persist session
+const saved = localStorage.getItem("bleu4-user");
+if (saved) { try { state.user = JSON.parse(saved); } catch {} }
+
+// ── RENDER ──
+function render() {
+  const app = document.getElementById("app");
+  if (!state.user) { app.innerHTML = renderLogin(); return; }
+
+  let content = "";
+  if (state.screen === "list") content = renderList();
+  else if (state.screen === "create") content = renderCreate();
+  else if (state.screen === "event") content = renderEvent();
+
+  app.innerHTML = `
+    ${renderHeader()}
+    <div class="content">${content}</div>
+    ${state.screen === "list" && state.user.role === "admin" ? `<button class="fab" onclick="goCreate()">+ NOUVEL ORDRE</button>` : ""}
+  `;
+  bindEvents();
+}
+
+function renderHeader() {
+  const back = state.screen !== "list" ? `<button class="back-btn" onclick="goBack()">&#8592; RETOUR</button>` : "";
+  return `
+    <header>
+      <div class="logo">BLEU 4<span>SYSTEME DE PRESENCE</span></div>
+      <div class="header-right">
+        <div class="role-badge">${state.user?.name || ""} / ${state.user?.role === "admin" ? "CDT" : "MBR"}</div>
+        ${back}
+      </div>
+    </header>`;
+}
+
+function renderLogin() {
+  return `
+    <div class="login-screen">
+      <div class="login-title">BLEU 4</div>
+      <div class="login-sub">SYSTEME DE PRESENCE</div>
+      <div class="field">
+        <label>IDENTIFIANT</label>
+        <input id="login-name" type="text" placeholder="NOM PRENOM" autocomplete="off" autocapitalize="characters">
+      </div>
+      <div class="field">
+        <label>ROLE</label>
+        <select id="login-role">
+          <option value="member">MEMBRE</option>
+          <option value="admin">COMMANDANT</option>
+        </select>
+      </div>
+      <div id="code-field" style="display:none" class="field">
+        <label>CODE D'ACCES</label>
+        <input id="login-code" type="password" placeholder="••••••••">
+        <div class="code-hint">Code requis pour acces commandant</div>
+      </div>
+      <div id="login-error" class="error-msg"></div>
+      <button class="btn-primary" onclick="doLogin()">CONNEXION</button>
+    </div>`;
+}
+
+function renderList() {
+  const evts = Object.entries(state.events).sort((a,b) => b[1].date?.localeCompare(a[1].date));
+  if (evts.length === 0) return `
+    <div class="section-label">ORDRES DU JOUR</div>
+    <div class="empty"><span class="empty-icon">&#9632;</span>AUCUN EVENEMENT</div>`;
+
+  return `
+    <div class="section-label">ORDRES DU JOUR — ${evts.length} ENTREE(S)</div>
+    <div class="event-list">
+      ${evts.map(([id, ev]) => {
+        const att = ev.attendees ? Object.values(ev.attendees) : [];
+        const yes = att.filter(a => a.status === "yes").length;
+        const no = att.filter(a => a.status === "no").length;
+        const isAdmin = state.user.role === "admin";
+        return `
+          <div class="event-card" onclick="goEvent('${id}')">
+            <div class="event-info">
+              <div class="event-title">${ev.title}</div>
+              <div class="event-meta">${formatDate(ev.date)}${ev.location ? " / " + ev.location : ""}</div>
+            </div>
+            <div class="event-stats">
+              <div class="stat-pill yes">${yes} OUI</div>
+              <div class="stat-pill no">${no} NON</div>
+              ${isAdmin ? `<button class="del-btn" onclick="event.stopPropagation();delEvent('${id}')">&#10005;</button>` : ""}
+            </div>
+          </div>`;
+      }).join("")}
+    </div>`;
+}
+
+function renderCreate() {
+  return `
+    <div class="create-header">NOUVEL ORDRE</div>
+    <div class="field"><label>INTITULE *</label><input id="f-title" type="text" placeholder="EX: EXERCICE TERRAIN" autocapitalize="characters"></div>
+    <div class="field"><label>DATE *</label><input id="f-date" type="date"></div>
+    <div class="field"><label>HEURE</label><input id="f-time" type="time"></div>
+    <div class="field"><label>LIEU</label><input id="f-loc" type="text" placeholder="EX: BASE NORD" autocapitalize="characters"></div>
+    <div class="field"><label>DESCRIPTION</label><input id="f-desc" type="text" placeholder="INFORMATIONS COMPLEMENTAIRES" autocapitalize="characters"></div>
+    <button class="btn-primary" onclick="doCreate()">VALIDER L'ORDRE</button>
+    <button class="btn-secondary" onclick="goBack()">ANNULER</button>`;
+}
+
+function renderEvent() {
+  const ev = state.events[state.activeEventId];
+  if (!ev) return "<div class='empty'>EVENEMENT INTROUVABLE</div>";
+  const att = ev.attendees ? Object.values(ev.attendees) : [];
+  const attEntries = ev.attendees ? Object.entries(ev.attendees) : [];
+  const yes = att.filter(a => a.status === "yes").length;
+  const no = att.filter(a => a.status === "no").length;
+  const pending = att.filter(a => !a.status).length;
+  const isAdmin = state.user.role === "admin";
+
+  // My status
+  const myEntry = attEntries.find(([,a]) => a.name === state.user.name);
+  const myStatus = myEntry ? myEntry[1].status : null;
+
+  return `
+    <div class="ev-header">
+      <div class="ev-title-big">${ev.title}</div>
+      <div class="ev-date-big">${formatDate(ev.date)}${ev.time ? " — " + ev.time : ""}${ev.location ? " / " + ev.location : ""}</div>
+      ${ev.desc ? `<div class="ev-desc">${ev.desc}</div>` : ""}
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-box"><span class="stat-num green">${yes}</span><span class="stat-lbl">PRESENTS</span></div>
+      <div class="stat-box"><span class="stat-num red">${no}</span><span class="stat-lbl">ABSENTS</span></div>
+      <div class="stat-box"><span class="stat-num">${pending}</span><span class="stat-lbl">EN ATTENTE</span></div>
+    </div>
+
+    ${!isAdmin ? `
+    <div class="my-rsvp">
+      <div class="my-rsvp-label">VOTRE REPONSE</div>
+      <div class="rsvp-choice">
+        <button class="rsvp-yes ${myStatus === 'yes' ? 'active' : ''}" onclick="setMyStatus('yes')">PRESENT</button>
+        <button class="rsvp-no ${myStatus === 'no' ? 'active' : ''}" onclick="setMyStatus('no')">ABSENT</button>
+      </div>
+    </div>` : ""}
+
+    <div class="section-label">EFFECTIF — ${att.length} PERSONNE(S)</div>
+    ${isAdmin ? `
+    <div class="add-row">
+      <input id="add-name" type="text" placeholder="AJOUTER UN NOM..." autocapitalize="characters">
+      <button onclick="addMember()">+</button>
+    </div>` : ""}
+
+    <div>
+      ${attEntries.length === 0 ? `<div class="empty" style="padding:30px 0">AUCUN MEMBRE AJOUTE</div>` : ""}
+      ${attEntries.map(([aid, a]) => `
+        <div class="attendee-row">
+          <div class="attendee-initial">${a.name[0].toUpperCase()}</div>
+          <div class="attendee-name">${a.name}</div>
+          <div class="attendee-status ${a.status || 'pending'}">${a.status === 'yes' ? 'PRESENT' : a.status === 'no' ? 'ABSENT' : 'EN ATT.'}</div>
+          ${isAdmin ? `<button class="del-btn" onclick="delMember('${aid}')">&#10005;</button>` : ""}
+        </div>`).join("")}
+    </div>`;
+}
+
+// ── BIND EVENTS ──
+function bindEvents() {
+  const roleSelect = document.getElementById("login-role");
+  if (roleSelect) {
+    roleSelect.addEventListener("change", () => {
+      document.getElementById("code-field").style.display = roleSelect.value === "admin" ? "block" : "none";
+    });
+  }
+  const loginName = document.getElementById("login-name");
+  if (loginName) loginName.addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+  const addName = document.getElementById("add-name");
+  if (addName) addName.addEventListener("keydown", e => { if (e.key === "Enter") addMember(); });
+}
+
+// ── ACTIONS ──
+window.doLogin = function() {
+  const name = document.getElementById("login-name").value.trim().toUpperCase();
+  const role = document.getElementById("login-role").value;
+  const code = document.getElementById("login-code")?.value || "";
+  const errEl = document.getElementById("login-error");
+  if (!name) { errEl.textContent = "IDENTIFIANT REQUIS"; return; }
+  if (role === "admin" && code !== ADMIN_CODE) { errEl.textContent = "CODE INCORRECT"; return; }
+  state.user = { name, role };
+  localStorage.setItem("bleu4-user", JSON.stringify(state.user));
+  state.screen = "list";
+  subscribeEvents();
+  render();
+};
+
+window.goCreate = function() { state.screen = "create"; render(); };
+window.goBack = function() {
+  if (state.screen === "event" || state.screen === "create") { state.screen = "list"; render(); }
+};
+window.goEvent = function(id) { state.activeEventId = id; state.screen = "event"; render(); };
+
+window.doCreate = function() {
+  const title = document.getElementById("f-title").value.trim().toUpperCase();
+  const date = document.getElementById("f-date").value;
+  const time = document.getElementById("f-time").value;
+  const loc = document.getElementById("f-loc").value.trim().toUpperCase();
+  const desc = document.getElementById("f-desc").value.trim();
+  if (!title || !date) return;
+  const evRef = push(ref(db, "events"));
+  set(evRef, { title, date, time, location: loc, desc, attendees: {} });
+  state.activeEventId = evRef.key;
+  state.screen = "event";
+  render();
+};
+
+window.delEvent = function(id) {
+  remove(ref(db, `events/${id}`));
+  if (state.activeEventId === id) { state.activeEventId = null; state.screen = "list"; }
+};
+
+window.addMember = function() {
+  const input = document.getElementById("add-name");
+  const name = input.value.trim().toUpperCase();
+  if (!name || !state.activeEventId) return;
+  const ev = state.events[state.activeEventId];
+  const exists = ev?.attendees && Object.values(ev.attendees).find(a => a.name === name);
+  if (exists) { input.value = ""; return; }
+  push(ref(db, `events/${state.activeEventId}/attendees`), { name, status: null });
+  input.value = "";
+};
+
+window.delMember = function(aid) {
+  remove(ref(db, `events/${state.activeEventId}/attendees/${aid}`));
+};
+
+window.setMyStatus = function(status) {
+  const ev = state.events[state.activeEventId];
+  if (!ev) return;
+  const entries = ev.attendees ? Object.entries(ev.attendees) : [];
+  const myEntry = entries.find(([,a]) => a.name === state.user.name);
+  if (myEntry) {
+    const newStatus = myEntry[1].status === status ? null : status;
+    update(ref(db, `events/${state.activeEventId}/attendees/${myEntry[0]}`), { status: newStatus });
+  } else {
+    push(ref(db, `events/${state.activeEventId}/attendees`), { name: state.user.name, status });
+  }
+};
+
+// ── FIREBASE SYNC ──
+function subscribeEvents() {
+  onValue(ref(db, "events"), snap => {
+    state.events = snap.val() || {};
+    render();
+  });
+}
+
+// ── HELPERS ──
+function formatDate(str) {
+  if (!str) return "";
+  const [y, m, d] = str.split("-");
+  const months = ["JAN","FEV","MAR","AVR","MAI","JUN","JUL","AOU","SEP","OCT","NOV","DEC"];
+  return `${parseInt(d)} ${months[parseInt(m)-1]} ${y}`;
+}
+
+// ── INIT ──
+if (state.user) {
+  state.screen = "list";
+  subscribeEvents();
+} else {
+  render();
+}
+</script>
+</body>
+</html>
