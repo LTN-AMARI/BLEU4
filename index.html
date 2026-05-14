@@ -534,15 +534,15 @@ function renderLogin() {
       </div>
       <div class="field">
         <label>ROLE</label>
-        <select id="login-role">
+        <select id="login-role" onchange="document.getElementById('code-field').style.display=this.value==='admin'?'block':'none'">
           <option value="member">MEMBRE</option>
-          <option value="admin">COMMANDANT</option>
+          <option value="admin">COMMANDEMENT</option>
         </select>
       </div>
       <div id="code-field" style="display:none" class="field">
         <label>CODE D'ACCES</label>
         <input id="login-code" type="password" placeholder="••••••••">
-        <div class="code-hint">Code requis pour acces commandant</div>
+        <div class="code-hint">Code requis pour acces commandement</div>
       </div>
       <div id="login-error" class="error-msg"></div>
       <button class="btn-primary" onclick="doLogin()">CONNEXION</button>
@@ -648,12 +648,7 @@ function renderEvent() {
 
 // ── BIND EVENTS ──
 function bindEvents() {
-  const roleSelect = document.getElementById("login-role");
-  if (roleSelect) {
-    roleSelect.addEventListener("change", () => {
-      document.getElementById("code-field").style.display = roleSelect.value === "admin" ? "block" : "none";
-    });
-  }
+  // role select handled inline
   const loginName = document.getElementById("login-name");
   if (loginName) loginName.addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
   const addName = document.getElementById("add-name");
