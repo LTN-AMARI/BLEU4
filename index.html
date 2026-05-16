@@ -1,1 +1,455 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><title>BLEU 4</title></head><body style='background:#050505;color:white;font-family:Arial;padding:40px;'><h1 style='color:#c8a84b;'>BLEU 4</h1><p>Base propre opérationnelle.</p></body></html>
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BLEU 4</title>
+
+<style>
+
+body{
+  margin:0;
+  padding:0;
+  background:#050505;
+  color:#ece5d6;
+  font-family:Arial,sans-serif;
+}
+
+/* WATERMARK LOGO */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:url('logo.png') center center no-repeat;
+  background-size:70%;
+  opacity:0.03;
+  pointer-events:none;
+}
+
+/* HEADER */
+
+header{
+  background:#0b0b0b;
+  border-bottom:1px solid #c8a84b;
+  padding:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+}
+
+.logo{
+  font-size:32px;
+  font-weight:bold;
+  color:#c8a84b;
+}
+
+.status{
+  color:#c8a84b;
+  border:1px solid #c8a84b;
+  padding:6px 12px;
+  font-size:12px;
+}
+
+/* CONTENT */
+
+.content{
+  max-width:600px;
+  margin:auto;
+  padding:20px;
+}
+
+.section-title{
+  font-size:28px;
+  margin-bottom:20px;
+  color:#c8a84b;
+}
+
+/* EVENT CARD */
+
+.card{
+  background:#111;
+  border-left:3px solid #c8a84b;
+  padding:20px;
+  margin-bottom:20px;
+}
+
+.title{
+  font-size:24px;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.date{
+  color:#c8a84b;
+  margin-bottom:10px;
+}
+
+.location{
+  color:#888;
+  margin-bottom:15px;
+}
+
+/* COMPACT BAR */
+
+.compact{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:15px;
+}
+
+.badge{
+  padding:6px 10px;
+  border:1px solid;
+  font-size:12px;
+  cursor:pointer;
+}
+
+.present{
+  border-color:#46b96b;
+  color:#46b96b;
+}
+
+.absent{
+  border-color:#d84a4a;
+  color:#d84a4a;
+}
+
+.pending{
+  border-color:#888;
+  color:#888;
+}
+
+/* DROPDOWN */
+
+.dropdown{
+  display:none;
+  background:#0c0c0c;
+  border:1px solid #222;
+  padding:10px;
+  margin-bottom:15px;
+}
+
+.dropdown.active{
+  display:block;
+}
+
+.dropdown-line{
+  padding:6px 0;
+  border-bottom:1px solid #1b1b1b;
+}
+
+/* BUTTONS */
+
+.btns{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+button{
+  padding:14px;
+  border:none;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.yes{
+  background:#46b96b;
+}
+
+.no{
+  background:#d84a4a;
+  color:white;
+}
+
+.validate{
+  width:100%;
+  background:#c8a84b;
+  margin-top:10px;
+}
+
+/* FORM */
+
+.form-box{
+  background:#111;
+  border-left:3px solid #c8a84b;
+  padding:20px;
+  margin-top:20px;
+}
+
+.form-title{
+  color:#c8a84b;
+  font-size:24px;
+  margin-bottom:15px;
+}
+
+label{
+  display:block;
+  margin-bottom:5px;
+  color:#999;
+  font-size:12px;
+}
+
+input,
+textarea{
+  width:100%;
+  padding:10px;
+  margin-bottom:15px;
+  background:#0b0b0b;
+  border:1px solid #333;
+  color:white;
+}
+
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+/* INSTALL */
+
+.install{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#0d0d0d;
+  border-top:1px solid #c8a84b;
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.install button{
+  background:#c8a84b;
+}
+
+@media(max-width:600px){
+
+  .row{
+    grid-template-columns:1fr;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+BLEU 4
+</div>
+
+<div class="status">
+OPERATIONNEL
+</div>
+
+</header>
+
+<div class="content">
+
+<div class="section-title">
+CALENDRIER
+</div>
+
+<!-- EVENT -->
+
+<div class="card">
+
+<div class="title">
+MATA'ARA
+</div>
+
+<div class="date">
+15 MAI 2026 → 17 MAI 2026
+</div>
+
+<div class="location">
+BASE NORD / ARUE
+</div>
+
+<!-- BANDEAU -->
+
+<div class="compact">
+
+<div class="badge present" onclick="toggleDrop('presentDrop')">
+🟢 PRESENTS (12)
+</div>
+
+<div class="badge absent" onclick="toggleDrop('absentDrop')">
+🔴 ABSENTS (3)
+</div>
+
+<div class="badge pending" onclick="toggleDrop('pendingDrop')">
+⚪ EN ATTENTE (5)
+</div>
+
+</div>
+
+<!-- LISTES -->
+
+<div class="dropdown" id="presentDrop">
+
+<div class="dropdown-line">
+LTN AMARI
+</div>
+
+<div class="dropdown-line">
+SGT PRATZ
+</div>
+
+<div class="dropdown-line">
+CPL CHUNG
+</div>
+
+</div>
+
+<div class="dropdown" id="absentDrop">
+
+<div class="dropdown-line">
+1CL TAHAIA
+</div>
+
+<div class="dropdown-line">
+CPL HUUTI
+</div>
+
+</div>
+
+<div class="dropdown" id="pendingDrop">
+
+<div class="dropdown-line">
+CCH GAUCHY
+</div>
+
+</div>
+
+<!-- REPONSES -->
+
+<div class="btns">
+
+<button class="yes">
+PRESENT
+</button>
+
+<button class="no">
+ABSENT
+</button>
+
+</div>
+
+<button class="validate">
+VALIDER
+</button>
+
+</div>
+
+<!-- FORMULAIRE -->
+
+<div class="form-box">
+
+<div class="form-title">
+NOUVEL ORDRE
+</div>
+
+<label>
+INTITULE
+</label>
+
+<input type="text" placeholder="EX : EXERCICE TERRAIN">
+
+<div class="row">
+
+<div>
+
+<label>
+DATE DEBUT
+</label>
+
+<input type="date">
+
+</div>
+
+<div>
+
+<label>
+DATE FIN
+</label>
+
+<input type="date">
+
+</div>
+
+</div>
+
+<label>
+LIEU
+</label>
+
+<input type="text" placeholder="BASE NORD">
+
+<label>
+DESCRIPTION
+</label>
+
+<textarea></textarea>
+
+<button class="validate">
+CREER L'ORDRE
+</button>
+
+</div>
+
+<!-- NOTIFICATIONS -->
+
+<div class="form-box">
+
+<div class="form-title">
+NOTIFICATIONS ADMIN
+</div>
+
+<p>
+SGT PRATZ → PRESENT<br>
+MATA'ARA<br>
+15 MAI 2026 → 17 MAI 2026
+</p>
+
+</div>
+
+</div>
+
+<!-- INSTALL -->
+
+<div class="install">
+
+<div>
+Installer BLEU 4
+</div>
+
+<button>
+INSTALLER
+</button>
+
+</div>
+
+<script>
+
+function toggleDrop(id){
+
+  document.getElementById(id).classList.toggle('active');
+
+}
+
+</script>
+
+</body>
+</html>
