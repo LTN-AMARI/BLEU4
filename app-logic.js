@@ -33,6 +33,14 @@ function generateCalendar() {
         div.className = "day";
         div.textContent = d;
 
+        const dateKey = `${year}-${month + 1}-${d}`;
+        const events = getEvents()[dateKey];
+
+        if (events && events.length > 0) {
+            div.style.background = "#415a77";
+            div.style.border = "2px solid #e0e1dd";
+        }
+
         div.onclick = () => openDay(d);
 
         calendar.appendChild(div);
@@ -75,8 +83,11 @@ function openDay(day) {
             const btnYes = document.createElement("button");
             btnYes.textContent = "Je participe";
             btnYes.onclick = () => {
-                ev.participants.push(`${grade} ${nom}`);
+                if (!ev.participants.includes(`${grade} ${nom}`)) {
+                    ev.participants.push(`${grade} ${nom}`);
+                }
                 saveEvents(events);
+                saveHistory(dateKey, ev.title, "PARTICIPE");
                 openDay(day);
             };
 
@@ -85,6 +96,7 @@ function openDay(day) {
             btnNo.onclick = () => {
                 ev.participants = ev.participants.filter(p => p !== `${grade} ${nom}`);
                 saveEvents(events);
+                saveHistory(dateKey, ev.title, "NE PARTICIPE PAS");
                 openDay(day);
             };
 
@@ -134,4 +146,18 @@ function openDay(day) {
             document.getElementById("eventDesc").value = "";
         };
     }
+}
+
+// --- HISTORIQUE DES PARTICIPATIONS ---
+function saveHistory(date, eventTitle, status) {
+    const history = JSON.parse(localStorage.getItem("history") || "[]");
+
+    history.push({
+        date,
+        eventTitle,
+        status,
+        user: `${grade} ${nom}`
+    });
+
+    localStorage.setItem("history", JSON.stringify(history));
 }
