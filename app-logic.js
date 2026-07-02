@@ -13,32 +13,63 @@ const panelDate = document.getElementById("panelDate");
 const eventList = document.getElementById("eventList");
 const cmdCreate = document.getElementById("cmdCreate");
 
-const today = new Date();
-const year = today.getFullYear();
-const month = today.getMonth();
+let currentYear = new Date().getFullYear();
+let currentMonth = new Date().getMonth();
+
+const monthNames = [
+    "Janvier","Février","Mars","Avril","Mai","Juin",
+    "Juillet","Août","Septembre","Octobre","Novembre","Décembre"
+];
+
+document.getElementById("currentMonth").textContent =
+    `${monthNames[currentMonth]} ${currentYear}`;
+
+document.getElementById("prevMonth").onclick = () => {
+    currentMonth--;
+    if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+    }
+    updateCalendar();
+};
+
+document.getElementById("nextMonth").onclick = () => {
+    currentMonth++;
+    if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+    }
+    updateCalendar();
+};
+
+function updateCalendar() {
+    document.getElementById("currentMonth").textContent =
+        `${monthNames[currentMonth]} ${currentYear}`;
+    generateCalendar();
+}
 
 // Génération du calendrier
 function generateCalendar() {
     calendar.innerHTML = "";
 
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
     for (let i = 0; i < firstDay; i++) {
         calendar.appendChild(document.createElement("div"));
     }
+
+    const events = getEvents();
 
     for (let d = 1; d <= daysInMonth; d++) {
         const div = document.createElement("div");
         div.className = "day";
         div.textContent = d;
 
-        const dateKey = `${year}-${month + 1}-${d}`;
-        const events = getEvents()[dateKey];
+        const dateKey = `${currentYear}-${currentMonth + 1}-${d}`;
 
-        if (events && events.length > 0) {
-            div.style.background = "#415a77";
-            div.style.border = "2px solid #e0e1dd";
+        if (events[dateKey] && events[dateKey].length > 0) {
+            div.classList.add("hasEvent");
         }
 
         div.onclick = () => openDay(d);
@@ -59,7 +90,7 @@ function saveEvents(events) {
 }
 
 function openDay(day) {
-    const dateKey = `${year}-${month + 1}-${day}`;
+    const dateKey = `${currentYear}-${currentMonth + 1}-${day}`;
     panelDate.textContent = `Événements du ${dateKey}`;
     eventPanel.style.display = "block";
 
@@ -160,4 +191,25 @@ function saveHistory(date, eventTitle, status) {
     });
 
     localStorage.setItem("history", JSON.stringify(history));
+    loadHistory();
 }
+
+function loadHistory() {
+    const history = JSON.parse(localStorage.getItem("history") || "[]");
+    const list = document.getElementById("historyList");
+
+    list.innerHTML = "";
+
+    history.forEach(h => {
+        const div = document.createElement("div");
+        div.className = "eventBox";
+        div.innerHTML = `
+            <strong>${h.user}</strong><br>
+            ${h.date} — ${h.eventTitle}<br>
+            <em>${h.status}</em>
+        `;
+        list.appendChild(div);
+    });
+}
+
+loadHistory();
