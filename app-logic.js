@@ -1,93 +1,137 @@
-// Récupération du rôle et des infos utilisateur
+// Rôle et infos utilisateur
 const role = localStorage.getItem("role");
 const grade = localStorage.getItem("grade");
 const nom = localStorage.getItem("nom");
 
-const userInfo = document.getElementById("userInfo");
-const createSection = document.getElementById("createSection");
-const eventsList = document.getElementById("eventsList");
+document.getElementById("userInfo").innerHTML =
+    `<strong>${grade} ${nom}</strong> — Accès ${role.toUpperCase()}`;
 
-// Affichage des infos utilisateur
-userInfo.innerHTML = `<strong>${grade} ${nom}</strong> (${role})`;
+// --- CALENDRIER ---
+const calendar = document.getElementById("calendar");
+const eventPanel = document.getElementById("eventPanel");
+const panelDate = document.getElementById("panelDate");
+const eventList = document.getElementById("eventList");
+const cmdCreate = document.getElementById("cmdCreate");
 
-// Si commandement → afficher la création d'événements
-if (role === "commandement") {
-    createSection.style.display = "block";
+const today = new Date();
+const year = today.getFullYear();
+const month = today.getMonth();
+
+// Génération du calendrier
+function generateCalendar() {
+    calendar.innerHTML = "";
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    for (let i = 0; i < firstDay; i++) {
+        calendar.appendChild(document.createElement("div"));
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+        const div = document.createElement("div");
+        div.className = "day";
+        div.textContent = d;
+
+        div.onclick = () => openDay(d);
+
+        calendar.appendChild(div);
+    }
 }
 
-// Charger les événements depuis localStorage
-function loadEvents() {
-    const events = JSON.parse(localStorage.getItem("events") || "[]");
-    eventsList.innerHTML = "";
+generateCalendar();
 
-    events.forEach((ev, index) => {
-        const div = document.createElement("div");
-        div.className = "event";
+// --- ÉVÉNEMENTS ---
+function getEvents() {
+    return JSON.parse(localStorage.getItem("events") || "{}");
+}
 
-        div.innerHTML = `
-            <h3>${ev.title}</h3>
-            <p>${ev.desc}</p>
-            <p><strong>Participants :</strong> ${ev.participants.join(", ") || "Aucun"}</p>
+function saveEvents(events) {
+    localStorage.setItem("events", JSON.stringify(events));
+}
+
+function openDay(day) {
+    const dateKey = `${year}-${month + 1}-${day}`;
+    panelDate.textContent = `Événements du ${dateKey}`;
+    eventPanel.style.display = "block";
+
+    const events = getEvents();
+    const dayEvents = events[dateKey] || [];
+
+    eventList.innerHTML = "";
+
+    dayEvents.forEach((ev, index) => {
+        const box = document.createElement("div");
+        box.className = "eventBox";
+
+        box.innerHTML = `
+            <strong>${ev.title}</strong><br>
+            ${ev.desc}<br>
+            <em>Participants :</em> ${ev.participants.join(", ") || "Aucun"}
         `;
 
-        // Bouton "Je participe" pour accès simple
+        // Participation (simple)
         if (role === "simple") {
-            const btn = document.createElement("button");
-            btn.textContent = "Je participe";
-            btn.onclick = () => {
+            const btnYes = document.createElement("button");
+            btnYes.textContent = "Je participe";
+            btnYes.onclick = () => {
                 ev.participants.push(`${grade} ${nom}`);
                 saveEvents(events);
-                loadEvents();
+                openDay(day);
             };
-            div.appendChild(btn);
+
+            const btnNo = document.createElement("button");
+            btnNo.textContent = "Je ne participe pas";
+            btnNo.onclick = () => {
+                ev.participants = ev.participants.filter(p => p !== `${grade} ${nom}`);
+                saveEvents(events);
+                openDay(day);
+            };
+
+            box.appendChild(btnYes);
+            box.appendChild(btnNo);
         }
 
-        // Commandement → supprimer l'événement
+        // Commandement → supprimer
         if (role === "commandement") {
             const del = document.createElement("button");
             del.textContent = "Supprimer";
             del.style.background = "red";
             del.onclick = () => {
-                events.splice(index, 1);
+                dayEvents.splice(index, 1);
+                events[dateKey] = dayEvents;
                 saveEvents(events);
-                loadEvents();
+                openDay(day);
             };
-            div.appendChild(del);
+            box.appendChild(del);
         }
 
-        eventsList.appendChild(div);
+        eventList.appendChild(box);
     });
+
+    // Création d’événements (commandement)
+    if (role === "commandement") {
+        cmdCreate.style.display = "block";
+
+        document.getElementById("createEventBtn").onclick = () => {
+            const title = document.getElementById("eventTitle").value.trim();
+            const desc = document.getElementById("eventDesc").value.trim();
+
+            if (!title || !desc) return;
+
+            if (!events[dateKey]) events[dateKey] = [];
+
+            events[dateKey].push({
+                title,
+                desc,
+                participants: []
+            });
+
+            saveEvents(events);
+            openDay(day);
+
+            document.getElementById("eventTitle").value = "";
+            document.getElementById("eventDesc").value = "";
+        };
+    }
 }
-
-// Sauvegarder les événements
-function saveEvents(events) {
-    localStorage.setItem("events", JSON.stringify(events));
-}
-
-// Création d'un événement (commandement)
-const createEventBtn = document.getElementById("createEventBtn");
-if (createEventBtn) {
-    createEventBtn.onclick = () => {
-        const title = document.getElementById("eventTitle").value.trim();
-        const desc = document.getElementById("eventDesc").value.trim();
-
-        if (!title || !desc) return;
-
-        const events = JSON.parse(localStorage.getItem("events") || "[]");
-
-        events.push({
-            title,
-            desc,
-            participants: []
-        });
-
-        saveEvents(events);
-        loadEvents();
-
-        document.getElementById("eventTitle").value = "";
-        document.getElementById("eventDesc").value = "";
-    };
-}
-
-// Charger les événements au démarrage
-loadEvents();
