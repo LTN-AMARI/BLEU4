@@ -52,7 +52,7 @@ loginCmd.onclick = () => {
         return;
     }
 
-    // Mot de passe commandement (à modifier si tu veux)
+    // Mot de passe commandement
     const PASS_CMD = "BLEU4CMD";
 
     if (pass !== PASS_CMD) {
