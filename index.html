@@ -441,33 +441,6 @@ function render() {
   bindEvents();
 }
  
-function renderLogin()
-  return `
-    <div class="login-screen">
-      <div class="login-logo"><img src="LOGO_BASE64_ICI" alt=""></div>
-      <div class="login-title">BLEU 4</div>
-      <div class="login-sub">SYSTEME DE PRESENCE</div>
-      <div class="field">
-        <label>GRADE NOM</label>
-        <input id="login-name" type="text" placeholder="EX: SGT DUPONT" autocomplete="off" autocapitalize="characters">
-      </div>
-      <div class="field">
-        <label>ROLE</label>
-        <select id="login-role" onchange="document.getElementById('code-field').style.display=this.value==='admin'?'block':'none'">
-          <option value="member">MEMBRE</option>
-          <option value="admin">COMMANDEMENT</option>
-        </select>
-      </div>
-      <div id="code-field" style="display:none" class="field">
-        <label>CODE D'ACCES</label>
-        <input id="login-code" type="password" placeholder="••••••••">
-        <div class="code-hint">Code requis pour acces commandement</div>
-      </div>
-      <div id="login-error" class="error-msg"></div>
-      <button class="btn-primary" onclick="doLogin()">CONNEXION</button>
-    </div>`;
-}
- 
 function renderCalendar() {
   const year = state.currentMonth.getFullYear();
   const month = state.currentMonth.getMonth();
