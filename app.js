@@ -1,49 +1,68 @@
-// --- INITIALISATION FIREBASE ---
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-    getAuth, 
-    signInWithEmailAndPassword 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+// Sélecteurs
+const simpleBtn = document.getElementById("simpleBtn");
+const cmdBtn = document.getElementById("cmdBtn");
 
-// ⚠️ Mets ici TES vraies valeurs Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyCOTja98aA-0umXrqm2c2k4frUFn6why1o",
-  authDomain: "bleu-4.firebaseapp.com",
-  databaseURL: "https://bleu-4-default-rtdb.firebaseio.com",
-  projectId: "bleu-4",
-  storageBucket: "bleu-4.firebasestorage.app",
-  messagingSenderId: "788139266954",
-  appId: "1:788139266954:web:c1896f25eb57687846ae73"
-};
+const simpleForm = document.getElementById("simpleForm");
+const cmdForm = document.getElementById("cmdForm");
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const loginSimple = document.getElementById("loginSimple");
+const loginCmd = document.getElementById("loginCmd");
 
-// --- LOGIQUE DE CONNEXION ---
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const loginBtn = document.getElementById("loginBtn");
 const errorBox = document.getElementById("error");
 
-loginBtn.addEventListener("click", async () => {
-    const email = emailInput.value.trim();
-    const password = passwordInput.value.trim();
-
+// Affichage des formulaires
+simpleBtn.onclick = () => {
+    simpleForm.classList.remove("hidden");
+    cmdForm.classList.add("hidden");
     errorBox.textContent = "";
+};
 
-    if (!email || !password) {
-        errorBox.textContent = "Veuillez remplir tous les champs.";
+cmdBtn.onclick = () => {
+    cmdForm.classList.remove("hidden");
+    simpleForm.classList.add("hidden");
+    errorBox.textContent = "";
+};
+
+// --- ACCÈS SIMPLE ---
+loginSimple.onclick = () => {
+    const grade = document.getElementById("gradeSimple").value.trim();
+    const nom = document.getElementById("nomSimple").value.trim();
+
+    if (!grade || !nom) {
+        errorBox.textContent = "Veuillez remplir grade et nom.";
         return;
     }
 
-    try {
-        await signInWithEmailAndPassword(auth, email, password);
+    // Stockage du rôle
+    localStorage.setItem("role", "simple");
+    localStorage.setItem("grade", grade);
+    localStorage.setItem("nom", nom);
 
-        // Connexion OK → redirection vers l'application
-        window.location.href = "app.html";
+    window.location.href = "app.html";
+};
 
-    } catch (err) {
-        console.error(err);
-        errorBox.textContent = "Identifiants incorrects ou compte inexistant.";
+// --- ACCÈS COMMANDEMENT ---
+loginCmd.onclick = () => {
+    const grade = document.getElementById("gradeCmd").value.trim();
+    const nom = document.getElementById("nomCmd").value.trim();
+    const pass = document.getElementById("passCmd").value.trim();
+
+    if (!grade || !nom || !pass) {
+        errorBox.textContent = "Tous les champs sont obligatoires.";
+        return;
     }
-});
+
+    // Mot de passe commandement (à modifier si tu veux)
+    const PASS_CMD = "BLEU4CMD";
+
+    if (pass !== PASS_CMD) {
+        errorBox.textContent = "Mot de passe incorrect.";
+        return;
+    }
+
+    localStorage.setItem("role", "commandement");
+    localStorage.setItem("grade", grade);
+    localStorage.setItem("nom", nom);
+
+    window.location.href = "app.html";
+};
