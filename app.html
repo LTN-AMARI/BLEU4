@@ -8,7 +8,7 @@
     <style>
         body {
             margin: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-family: system-ui, sans-serif;
             background: #f5f7fb;
         }
 
@@ -72,8 +72,6 @@
             font-size: 13px;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
-            align-items: flex-start;
             cursor: pointer;
         }
 
@@ -87,42 +85,12 @@
             border-color: #f59e0b;
         }
 
-        .day.has-event .day-number {
-            color: #b45309;
-        }
-
         .day.today {
             border-color: #2563eb;
             box-shadow: 0 0 0 1px #2563eb;
         }
 
-        /* Panneau des événements */
-        .event-panel {
-            margin-top: 12px;
-            background: #ffffff;
-            border-radius: 8px;
-            padding: 10px;
-            border: 1px solid #e5e7eb;
-        }
-
-        .event-panel h2 {
-            font-size: 16px;
-            margin: 0 0 8px;
-        }
-
-        .event-list {
-            font-size: 14px;
-        }
-
-        .event-item {
-            margin-bottom: 6px;
-        }
-
-        .event-item span {
-            display: block;
-        }
-
-        /* Formulaire de création d'événement */
+        .event-panel,
         .event-form {
             margin-top: 12px;
             background: #ffffff;
@@ -131,26 +99,23 @@
             border: 1px solid #e5e7eb;
         }
 
+        .event-panel h2,
         .event-form h2 {
             font-size: 16px;
             margin: 0 0 8px;
         }
 
-        .event-form label {
-            display: block;
-            font-size: 13px;
-            margin-bottom: 4px;
+        .event-item {
+            margin-bottom: 6px;
         }
 
         .event-form input,
         .event-form textarea {
             width: 100%;
-            box-sizing: border-box;
             padding: 6px 8px;
             margin-bottom: 8px;
             border-radius: 6px;
             border: 1px solid #d1d5db;
-            font-size: 14px;
         }
 
         .event-form button {
@@ -160,38 +125,18 @@
             background: #16a34a;
             color: #fff;
             font-size: 14px;
-            font-weight: 600;
             width: 100%;
         }
 
-        /* Mobile */
         @media (max-width: 600px) {
-            header h1 {
-                font-size: 16px;
-            }
-
-            .month-controls button {
-                font-size: 12px;
-                padding: 4px 8px;
-            }
-
-            .calendar {
-                gap: 3px;
-            }
-
             .day {
                 min-height: 46px;
-                padding: 3px;
                 font-size: 12px;
-            }
-
-            .event-panel,
-            .event-form {
-                padding: 8px;
             }
         }
     </style>
 </head>
+
 <body>
 <header>
     <h1>BLEU4 – Calendrier Opérationnel</h1>
@@ -207,26 +152,26 @@
 
     <section class="event-panel">
         <h2>Activités du jour</h2>
-        <div id="eventList" class="event-list">
-            Aucune activité pour ce jour.
-        </div>
+        <div id="eventList">Aucune activité pour ce jour.</div>
     </section>
 
     <section class="event-form">
         <h2>Créer une activité</h2>
-        <label for="eventDate">Date</label>
+
+        <label>Date</label>
         <input type="date" id="eventDate">
 
-        <label for="eventTitle">Titre</label>
-        <input type="text" id="eventTitle" placeholder="Nom de l'activité">
+        <label>Titre</label>
+        <input type="text" id="eventTitle">
 
-        <label for="eventDesc">Description</label>
-        <textarea id="eventDesc" rows="3" placeholder="Détails de l'activité"></textarea>
+        <label>Description</label>
+        <textarea id="eventDesc" rows="3"></textarea>
 
-        <button id="saveEventBtn">Enregistrer l'activité</button>
+        <button id="saveEventBtn">Enregistrer</button>
     </section>
 </main>
 
+<script src="app-logic.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
