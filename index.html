@@ -441,19 +441,6 @@ function render() {
   bindEvents();
 }
  
-function renderHeader() {
-  const back = state.screen !== "calendar" ? `<button class="back-btn" onclick="goBack()">&#8592; RETOUR</button>` : "";
-  const isAdmin = state.user?.role === "admin";
-  return `
-    <header>
-      <div class="logo">BLEU 4<span>SYSTEME DE PRESENCE</span></div>
-      <div class="header-right">
-        <div class="role-badge">${state.user?.name || ""} / ${isAdmin ? "CDT" : "MBR"}</div>
-        ${back}
-      </div>
-    </header>`;
-}
- 
 function renderLogin() {
   return `
     <div class="login-screen">
