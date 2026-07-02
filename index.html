@@ -441,41 +441,6 @@ function render() {
   bindEvents();
 }
  
-function renderCalendar() {
-  const year = state.currentMonth.getFullYear();
-  const month = state.currentMonth.getMonth();
-  const firstDay = new Date(year, month, 1);
-  const startDate = new Date(firstDay);
-  startDate.setDate(startDate.getDate() - (firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1));
-  const monthName = ["JANVIER","FEVRIER","MARS","AVRIL","MAI","JUIN","JUILLET","AOUT","SEPTEMBRE","OCTOBRE","NOVEMBRE","DECEMBRE"];
-  const dayNames = ["LUN","MAR","MER","JEU","VEN","SAM","DIM"];
-  let html = `
-    <div class="calendar-container">
-      <div class="calendar-header">
-        <button onclick="prevMonth()" style="background:none;border:1px solid var(--border);color:var(--text);padding:8px 12px;font-family:var(--font-mono);cursor:pointer;">← PREC</button>
-        <div class="month-title">${monthName[month]} ${year}</div>
-        <button onclick="nextMonth()" style="background:none;border:1px solid var(--border);color:var(--text);padding:8px 12px;font-family:var(--font-mono);cursor:pointer;">SUIV →</button>
-      </div>
-      <div class="calendar-grid">`;
-  dayNames.forEach(d => { html += `<div class="day-header">${d}</div>`; });
-  let cur = new Date(startDate);
-  for (let i = 0; i < 42; i++) {
-    const isOther = cur.getMonth() !== month;
-    const dateStr = fmtStorage(cur);
-    const evts = getEventsForDate(dateStr);
-    html += `<div class="calendar-day ${isOther ? 'other-month' : ''}">
-      <div class="day-number">${cur.getDate()}</div>
-      <div class="day-events">${evts.map(ev => `
-        <div class="day-event" onclick="goEvent('${ev.id}')">${ev.title}${ev.createdAt && (Date.now() - ev.createdAt) < 172800000 ? ' <span style="background:#c0392b;color:#fff;font-size:8px;padding:1px 4px;border-radius:2px;letter-spacing:1px;vertical-align:middle;">NEW</span>' : ''}</div>
-        ${ev.total > 0 ? `<div class="ev-summary"><span class="s-yes">✓${ev.yes}</span> <span class="s-no">✗${ev.no}</span>${ev.pending > 0 ? ` <span style="color:var(--muted)">?${ev.pending}</span>` : ''}</div>` : ''}
-      `).join('')}</div>
-    </div>`;
-    cur.setDate(cur.getDate() + 1);
-  }
-  html += `</div></div>`;
-  return html;
-}
- 
 function getEventsForDate(dateStr) {
   const evts = [];
   Object.entries(state.events).forEach(([id, ev]) => {
