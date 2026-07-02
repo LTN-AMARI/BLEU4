@@ -17,12 +17,12 @@
             height: 100vh;
         }
 
-        .login-container {
+        .container {
             background: white;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            width: 300px;
+            width: 320px;
             text-align: center;
         }
 
@@ -58,19 +58,39 @@
             color: red;
             margin-top: 10px;
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 
 <body>
 
-    <div class="login-container">
+    <div class="container">
         <h1>BLEU4</h1>
-        <input id="email" type="email" placeholder="Email">
-        <input id="password" type="password" placeholder="Mot de passe">
-        <button id="loginBtn">Connexion</button>
+
+        <button id="simpleBtn">Accès simple</button>
+        <button id="cmdBtn">Accès commandement</button>
+
+        <!-- Formulaire simple -->
+        <div id="simpleForm" class="hidden">
+            <input id="gradeSimple" type="text" placeholder="Grade">
+            <input id="nomSimple" type="text" placeholder="Nom">
+            <button id="loginSimple">Entrer</button>
+        </div>
+
+        <!-- Formulaire commandement -->
+        <div id="cmdForm" class="hidden">
+            <input id="gradeCmd" type="text" placeholder="Grade">
+            <input id="nomCmd" type="text" placeholder="Nom">
+            <input id="passCmd" type="password" placeholder="Mot de passe">
+            <button id="loginCmd">Connexion commandement</button>
+        </div>
+
         <div id="error"></div>
     </div>
 
-    <script type="module" src="app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
