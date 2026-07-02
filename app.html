@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLEU4 – Application</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef2ff;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #1e3a8a;
+        }
+
+        .event {
+            background: white;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        button {
+            padding: 8px 12px;
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #2742b0;
+        }
+
+        #createSection {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>BLEU4 – Tableau de bord</h1>
+
+    <div id="userInfo"></div>
+
+    <!-- Section création d'événements (commandement uniquement) -->
+    <div id="createSection" style="display:none;">
+        <h2>Créer un événement</h2>
+        <input id="eventTitle" type="text" placeholder="Titre">
+        <textarea id="eventDesc" placeholder="Description"></textarea>
+        <button id="createEventBtn">Créer</button>
+    </div>
+
+    <h2>Événements</h2>
+    <div id="eventsList"></div>
+
+    <script src="app-logic.js"></script>
+</body>
+</html>
