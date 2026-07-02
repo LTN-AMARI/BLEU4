@@ -8,15 +8,15 @@
     <style>
         body {
             font-family: "Arial Black", Arial, sans-serif;
-            background: #0d1b2a;
-            color: #e0e1dd;
+            background: #000000;
+            color: #FFD700;
             margin: 0;
             padding: 20px;
         }
 
         h1 {
             text-align: center;
-            color: #e0e1dd;
+            color: #FFD700;
             margin-bottom: 20px;
             letter-spacing: 2px;
         }
@@ -25,7 +25,26 @@
             text-align: center;
             margin-bottom: 20px;
             font-size: 18px;
-            color: #e0e1dd;
+        }
+
+        #monthSelector {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #monthSelector button {
+            background: #FFD700;
+            color: #000;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 0 10px;
+        }
+
+        #monthSelector button:hover {
+            background: #fff;
         }
 
         #calendar {
@@ -36,30 +55,37 @@
         }
 
         .day {
-            background: #1b263b;
+            background: #1a1a1a;
             padding: 15px;
             border-radius: 6px;
             text-align: center;
             cursor: pointer;
-            border: 1px solid #415a77;
+            border: 2px solid #FFD700;
         }
 
         .day:hover {
-            background: #415a77;
+            background: #333;
+        }
+
+        .hasEvent {
+            background: #FFD700;
+            color: #000;
+            font-weight: bold;
         }
 
         #eventPanel {
             margin-top: 25px;
-            background: #1b263b;
+            background: #1a1a1a;
             padding: 20px;
             border-radius: 8px;
             display: none;
+            border: 2px solid #FFD700;
         }
 
         button {
             padding: 10px 15px;
-            background: #778da9;
-            color: #0d1b2a;
+            background: #FFD700;
+            color: #000;
             border: none;
             border-radius: 6px;
             cursor: pointer;
@@ -68,7 +94,7 @@
         }
 
         button:hover {
-            background: #e0e1dd;
+            background: #fff;
         }
 
         input, textarea {
@@ -80,10 +106,19 @@
         }
 
         .eventBox {
-            background: #415a77;
+            background: #FFD700;
+            color: #000;
             padding: 10px;
             border-radius: 6px;
             margin-top: 10px;
+        }
+
+        #historyPanel {
+            margin-top: 30px;
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #FFD700;
         }
     </style>
 </head>
@@ -94,11 +129,16 @@
 
     <div id="userInfo"></div>
 
+    <div id="monthSelector">
+        <button id="prevMonth">◀ Mois précédent</button>
+        <span id="currentMonth"></span>
+        <button id="nextMonth">Mois suivant ▶</button>
+    </div>
+
     <div id="calendar"></div>
 
     <div id="eventPanel">
         <h2 id="panelDate"></h2>
-
         <div id="eventList"></div>
 
         <div id="cmdCreate" style="display:none;">
@@ -107,6 +147,11 @@
             <textarea id="eventDesc" placeholder="Description"></textarea>
             <button id="createEventBtn">Créer l’événement</button>
         </div>
+    </div>
+
+    <div id="historyPanel">
+        <h2>Historique des participations</h2>
+        <div id="historyList"></div>
     </div>
 
     <script src="app-logic.js"></script>
