@@ -2,158 +2,231 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BLEU4 – Calendrier Opérationnel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
         body {
-            font-family: "Arial Black", Arial, sans-serif;
-            background: #000000;
-            color: #FFD700;
             margin: 0;
-            padding: 20px;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f5f7fb;
         }
 
-        h1 {
-            text-align: center;
-            color: #FFD700;
-            margin-bottom: 20px;
-            letter-spacing: 2px;
+        header {
+            padding: 12px 16px;
+            background: #1e3a8a;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        #userInfo {
-            text-align: center;
-            margin-bottom: 20px;
+        header h1 {
             font-size: 18px;
+            margin: 0;
         }
 
-        #monthSelector {
-            text-align: center;
-            margin-bottom: 20px;
+        .month-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
 
-        #monthSelector button {
-            background: #FFD700;
-            color: #000;
-            padding: 10px 15px;
-            border: none;
+        .month-controls button {
+            padding: 6px 10px;
             border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            margin: 0 10px;
+            border: none;
+            background: #2563eb;
+            color: #fff;
+            font-size: 14px;
         }
 
-        #monthSelector button:hover {
-            background: #fff;
+        .month-label {
+            font-weight: 600;
         }
 
-        #calendar {
+        main {
+            padding: 10px;
+        }
+
+        .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-            margin-top: 20px;
+            gap: 4px;
+        }
+
+        .weekday {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4b5563;
+            padding: 4px 0;
         }
 
         .day {
-            background: #1a1a1a;
-            padding: 15px;
+            min-height: 52px;
+            padding: 4px;
+            background: #ffffff;
             border-radius: 6px;
-            text-align: center;
+            border: 1px solid #e5e7eb;
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
             cursor: pointer;
-            border: 2px solid #FFD700;
         }
 
-        .day:hover {
-            background: #333;
+        .day-number {
+            font-weight: 600;
+            margin-bottom: 4px;
         }
 
-        .hasEvent {
-            background: #FFD700;
-            color: #000;
-            font-weight: bold;
+        .day.has-event {
+            background: #fff7e6;
+            border-color: #f59e0b;
         }
 
-        #eventPanel {
-            margin-top: 25px;
-            background: #1a1a1a;
-            padding: 20px;
+        .day.has-event .day-number {
+            color: #b45309;
+        }
+
+        .day.today {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 1px #2563eb;
+        }
+
+        /* Panneau des événements */
+        .event-panel {
+            margin-top: 12px;
+            background: #ffffff;
             border-radius: 8px;
-            display: none;
-            border: 2px solid #FFD700;
+            padding: 10px;
+            border: 1px solid #e5e7eb;
         }
 
-        button {
-            padding: 10px 15px;
-            background: #FFD700;
-            color: #000;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 10px;
-            font-weight: bold;
+        .event-panel h2 {
+            font-size: 16px;
+            margin: 0 0 8px;
         }
 
-        button:hover {
-            background: #fff;
+        .event-list {
+            font-size: 14px;
         }
 
-        input, textarea {
+        .event-item {
+            margin-bottom: 6px;
+        }
+
+        .event-item span {
+            display: block;
+        }
+
+        /* Formulaire de création d'événement */
+        .event-form {
+            margin-top: 12px;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .event-form h2 {
+            font-size: 16px;
+            margin: 0 0 8px;
+        }
+
+        .event-form label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .event-form input,
+        .event-form textarea {
             width: 100%;
-            padding: 10px;
-            margin-top: 10px;
+            box-sizing: border-box;
+            padding: 6px 8px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            font-size: 14px;
+        }
+
+        .event-form button {
+            padding: 8px 12px;
             border-radius: 6px;
             border: none;
+            background: #16a34a;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            width: 100%;
         }
 
-        .eventBox {
-            background: #FFD700;
-            color: #000;
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 10px;
-        }
+        /* Mobile */
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 16px;
+            }
 
-        #historyPanel {
-            margin-top: 30px;
-            background: #1a1a1a;
-            padding: 20px;
-            border-radius: 8px;
-            border: 2px solid #FFD700;
+            .month-controls button {
+                font-size: 12px;
+                padding: 4px 8px;
+            }
+
+            .calendar {
+                gap: 3px;
+            }
+
+            .day {
+                min-height: 46px;
+                padding: 3px;
+                font-size: 12px;
+            }
+
+            .event-panel,
+            .event-form {
+                padding: 8px;
+            }
         }
     </style>
 </head>
-
 <body>
-
-    <h1>CALENDRIER OPÉRATIONNEL BLEU4</h1>
-
-    <div id="userInfo"></div>
-
-    <div id="monthSelector">
-        <button id="prevMonth">◀ Mois précédent</button>
-        <span id="currentMonth"></span>
-        <button id="nextMonth">Mois suivant ▶</button>
+<header>
+    <h1>BLEU4 – Calendrier Opérationnel</h1>
+    <div class="month-controls">
+        <button id="prevMonthBtn">◀</button>
+        <span id="monthLabel" class="month-label"></span>
+        <button id="nextMonthBtn">▶</button>
     </div>
+</header>
 
-    <div id="calendar"></div>
+<main>
+    <div class="calendar" id="calendar"></div>
 
-    <div id="eventPanel">
-        <h2 id="panelDate"></h2>
-        <div id="eventList"></div>
-
-        <div id="cmdCreate" style="display:none;">
-            <h3>Créer un événement</h3>
-            <input id="eventTitle" type="text" placeholder="Titre">
-            <textarea id="eventDesc" placeholder="Description"></textarea>
-            <button id="createEventBtn">Créer l’événement</button>
+    <section class="event-panel">
+        <h2>Activités du jour</h2>
+        <div id="eventList" class="event-list">
+            Aucune activité pour ce jour.
         </div>
-    </div>
+    </section>
 
-    <div id="historyPanel">
-        <h2>Historique des participations</h2>
-        <div id="historyList"></div>
-    </div>
+    <section class="event-form">
+        <h2>Créer une activité</h2>
+        <label for="eventDate">Date</label>
+        <input type="date" id="eventDate">
 
-    <script src="app-logic.js"></script>
+        <label for="eventTitle">Titre</label>
+        <input type="text" id="eventTitle" placeholder="Nom de l'activité">
+
+        <label for="eventDesc">Description</label>
+        <textarea id="eventDesc" rows="3" placeholder="Détails de l'activité"></textarea>
+
+        <button id="saveEventBtn">Enregistrer l'activité</button>
+    </section>
+</main>
+
+<script src="app.js"></script>
 </body>
 </html>
