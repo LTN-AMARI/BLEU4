@@ -3,48 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BLEU4 – Application</title>
+    <title>BLEU4 – Calendrier Opérationnel</title>
 
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #eef2ff;
+            font-family: "Arial Black", Arial, sans-serif;
+            background: #0d1b2a;
+            color: #e0e1dd;
             margin: 0;
             padding: 20px;
         }
 
         h1 {
-            color: #1e3a8a;
+            text-align: center;
+            color: #e0e1dd;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
         }
 
-        .event {
-            background: white;
+        #userInfo {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #e0e1dd;
+        }
+
+        #calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .day {
+            background: #1b263b;
             padding: 15px;
-            margin-top: 10px;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid #415a77;
+        }
+
+        .day:hover {
+            background: #415a77;
+        }
+
+        #eventPanel {
+            margin-top: 25px;
+            background: #1b263b;
+            padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: none;
         }
 
         button {
-            padding: 8px 12px;
-            background: #1e3a8a;
-            color: white;
+            padding: 10px 15px;
+            background: #778da9;
+            color: #0d1b2a;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             margin-top: 10px;
+            font-weight: bold;
         }
 
         button:hover {
-            background: #2742b0;
-        }
-
-        #createSection {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background: #e0e1dd;
         }
 
         input, textarea {
@@ -52,27 +76,38 @@
             padding: 10px;
             margin-top: 10px;
             border-radius: 6px;
-            border: 1px solid #ccc;
+            border: none;
+        }
+
+        .eventBox {
+            background: #415a77;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
         }
     </style>
 </head>
 
 <body>
 
-    <h1>BLEU4 – Tableau de bord</h1>
+    <h1>CALENDRIER OPÉRATIONNEL BLEU4</h1>
 
     <div id="userInfo"></div>
 
-    <!-- Section création d'événements (commandement uniquement) -->
-    <div id="createSection" style="display:none;">
-        <h2>Créer un événement</h2>
-        <input id="eventTitle" type="text" placeholder="Titre">
-        <textarea id="eventDesc" placeholder="Description"></textarea>
-        <button id="createEventBtn">Créer</button>
-    </div>
+    <div id="calendar"></div>
 
-    <h2>Événements</h2>
-    <div id="eventsList"></div>
+    <div id="eventPanel">
+        <h2 id="panelDate"></h2>
+
+        <div id="eventList"></div>
+
+        <div id="cmdCreate" style="display:none;">
+            <h3>Créer un événement</h3>
+            <input id="eventTitle" type="text" placeholder="Titre">
+            <textarea id="eventDesc" placeholder="Description"></textarea>
+            <button id="createEventBtn">Créer l’événement</button>
+        </div>
+    </div>
 
     <script src="app-logic.js"></script>
 </body>
