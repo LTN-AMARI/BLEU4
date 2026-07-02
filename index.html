@@ -134,7 +134,8 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, push, remove, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
+import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+ 
 const firebaseConfig = {
   apiKey: "AIzaSyCOTja98aA-0umXrqm2c2k4frUFn6why1o",
   authDomain: "bleu-4.firebaseapp.com",
@@ -144,14 +145,13 @@ const firebaseConfig = {
   messagingSenderId: "788139266954",
   appId: "1:788139266954:web:c1896f25eb57687846ae73"
 };
-
+ 
 const ADMIN_CODE = "BLEU4ADMIN";
-
-
-
+ 
 const fbApp = initializeApp(firebaseConfig);
 const db = getDatabase(fbApp);
-
+const auth = getAuth(fbApp);
+ 
 let state = {
   screen: "login",
   user: null,
@@ -160,25 +160,9 @@ let state = {
   pendingStatus: null,
   currentMonth: new Date(),
 };
-
+ 
 const saved = localStorage.getItem("bleu4-user");
 if (saved) { try { state.user = JSON.parse(saved); } catch {} }
-
-function render() {
-  const app = document.getElementById("app");
-  if (!state.user) { app.innerHTML = renderLogin(); bindEvents(); return; }
-  let content = "";
-  if (state.screen === "calendar") content = renderCalendar();
-  else if (state.screen === "create") content = renderCreate();
-  else if (state.screen === "event") content = renderEvent();
-  app.innerHTML = `
-    ${renderHeader()}
-    <div class="content">${content}</div>
-    ${state.screen === "calendar" && state.user.role === "admin" ? `<button class="fab" onclick="goCreate()">+ ORDRE</button>` : ""}
-  `;
-  bindEvents();
-}
-
 function renderHeader() {
   const back = state.screen !== "calendar" ? `<button class="back-btn" onclick="goBack()">&#8592; RETOUR</button>` : "";
   const isAdmin = state.user?.role === "admin";
@@ -433,7 +417,304 @@ function subscribeEvents() {
     render();
   });
 }
-
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // Auth Firebase confirmée : on peut lire/écrire dans la base
+    if (state.user) {
+      state.screen = "calendar";
+      subscribeEvents();
+    } else {
+      render();
+    }
+  }
+});
+ 
+signInAnonymously(auth).catch(err => {
+  console.error("Erreur d'authentification Firebase:", err);
+  const app = document.getElementById("app");
+  if (app) {
+    app.innerHTML = `<div class="connecting">ERREUR D'AUTHENTIFICATION<br>${err.code || err.message}<br><br>
+      Vérifie que "Anonymous" est activé dans<br>Firebase Console → Authentication → Sign-in method</div>`;
+  }
+});
+ 
+function render() {
+  const app = document.getElementById("app");
+  if (!state.user) { app.innerHTML = renderLogin(); bindEvents(); return; }
+  let content = "";
+  if (state.screen === "calendar") content = renderCalendar();
+  else if (state.screen === "create") content = renderCreate();
+  else if (state.screen === "event") content = renderEvent();
+  app.innerHTML = `
+    ${renderHeader()}
+    <div class="content">${content}</div>
+    ${state.screen === "calendar" && state.user.role === "admin" ? `<button class="fab" onclick="goCreate()">+ ORDRE</button>` : ""}
+  `;
+  bindEvents();
+}
+ 
+function renderHeader() {
+  const back = state.screen !== "calendar" ? `<button class="back-btn" onclick="goBack()">&#8592; RETOUR</button>` : "";
+  const isAdmin = state.user?.role === "admin";
+  return `
+    <header>
+      <div class="logo">BLEU 4<span>SYSTEME DE PRESENCE</span></div>
+      <div class="header-right">
+        <div class="role-badge">${state.user?.name || ""} / ${isAdmin ? "CDT" : "MBR"}</div>
+        ${back}
+      </div>
+    </header>`;
+}
+ 
+function renderLogin() {
+  return `
+    <div class="login-screen">
+      <div class="login-logo"><img src="LOGO_BASE64_ICI" alt=""></div>
+      <div class="login-title">BLEU 4</div>
+      <div class="login-sub">SYSTEME DE PRESENCE</div>
+      <div class="field">
+        <label>GRADE NOM</label>
+        <input id="login-name" type="text" placeholder="EX: SGT DUPONT" autocomplete="off" autocapitalize="characters">
+      </div>
+      <div class="field">
+        <label>ROLE</label>
+        <select id="login-role" onchange="document.getElementById('code-field').style.display=this.value==='admin'?'block':'none'">
+          <option value="member">MEMBRE</option>
+          <option value="admin">COMMANDEMENT</option>
+        </select>
+      </div>
+      <div id="code-field" style="display:none" class="field">
+        <label>CODE D'ACCES</label>
+        <input id="login-code" type="password" placeholder="••••••••">
+        <div class="code-hint">Code requis pour acces commandement</div>
+      </div>
+      <div id="login-error" class="error-msg"></div>
+      <button class="btn-primary" onclick="doLogin()">CONNEXION</button>
+    </div>`;
+}
+ 
+function renderCalendar() {
+  const year = state.currentMonth.getFullYear();
+  const month = state.currentMonth.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const startDate = new Date(firstDay);
+  startDate.setDate(startDate.getDate() - (firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1));
+  const monthName = ["JANVIER","FEVRIER","MARS","AVRIL","MAI","JUIN","JUILLET","AOUT","SEPTEMBRE","OCTOBRE","NOVEMBRE","DECEMBRE"];
+  const dayNames = ["LUN","MAR","MER","JEU","VEN","SAM","DIM"];
+  let html = `
+    <div class="calendar-container">
+      <div class="calendar-header">
+        <button onclick="prevMonth()" style="background:none;border:1px solid var(--border);color:var(--text);padding:8px 12px;font-family:var(--font-mono);cursor:pointer;">← PREC</button>
+        <div class="month-title">${monthName[month]} ${year}</div>
+        <button onclick="nextMonth()" style="background:none;border:1px solid var(--border);color:var(--text);padding:8px 12px;font-family:var(--font-mono);cursor:pointer;">SUIV →</button>
+      </div>
+      <div class="calendar-grid">`;
+  dayNames.forEach(d => { html += `<div class="day-header">${d}</div>`; });
+  let cur = new Date(startDate);
+  for (let i = 0; i < 42; i++) {
+    const isOther = cur.getMonth() !== month;
+    const dateStr = fmtStorage(cur);
+    const evts = getEventsForDate(dateStr);
+    html += `<div class="calendar-day ${isOther ? 'other-month' : ''}">
+      <div class="day-number">${cur.getDate()}</div>
+      <div class="day-events">${evts.map(ev => `
+        <div class="day-event" onclick="goEvent('${ev.id}')">${ev.title}${ev.createdAt && (Date.now() - ev.createdAt) < 172800000 ? ' <span style="background:#c0392b;color:#fff;font-size:8px;padding:1px 4px;border-radius:2px;letter-spacing:1px;vertical-align:middle;">NEW</span>' : ''}</div>
+        ${ev.total > 0 ? `<div class="ev-summary"><span class="s-yes">✓${ev.yes}</span> <span class="s-no">✗${ev.no}</span>${ev.pending > 0 ? ` <span style="color:var(--muted)">?${ev.pending}</span>` : ''}</div>` : ''}
+      `).join('')}</div>
+    </div>`;
+    cur.setDate(cur.getDate() + 1);
+  }
+  html += `</div></div>`;
+  return html;
+}
+ 
+function getEventsForDate(dateStr) {
+  const evts = [];
+  Object.entries(state.events).forEach(([id, ev]) => {
+    if (ev.dateStart <= dateStr && ev.dateEnd >= dateStr) {
+      const att = ev.attendees ? Object.values(ev.attendees) : [];
+      const yes = att.filter(a => a.status === "yes").length;
+      const no = att.filter(a => a.status === "no").length;
+      const pending = att.filter(a => !a.status).length;
+      evts.push({ id, title: ev.title, yes, no, pending, total: att.length });
+    }
+  });
+  return evts;
+}
+ 
+function fmtStorage(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth()+1).padStart(2,'0');
+  const d = String(date.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
+}
+ 
+function renderCreate() {
+  return `
+    <div class="create-form">
+      <div class="create-header">NOUVEL ORDRE</div>
+      <div class="field"><label>INTITULE *</label><input id="f-title" type="text" placeholder="EX: EXERCICE TERRAIN" autocapitalize="characters"></div>
+      <div class="field"><label>DATE DEBUT *</label><input id="f-date-start" type="date"></div>
+      <div class="field"><label>DATE FIN *</label><input id="f-date-end" type="date"></div>
+      <div class="field"><label>LIEU</label><input id="f-loc" type="text" placeholder="EX: BASE NORD" autocapitalize="characters"></div>
+      <div class="field"><label>DESCRIPTION</label><input id="f-desc" type="text" placeholder="INFORMATIONS COMPLEMENTAIRES" autocapitalize="characters"></div>
+      <div class="field"><label>CONCERNE</label><input id="f-allowed" type="text" placeholder="TOUS  ou  SGT PRATZ, CPL CHUNG" autocapitalize="characters"></div>
+      <button class="btn-primary" onclick="doCreate()">VALIDER L'ORDRE</button>
+      <button class="btn-secondary" onclick="goBack()">ANNULER</button>
+    </div>`;
+}
+ 
+function renderEvent() {
+  const ev = state.events[state.activeEventId];
+  if (!ev) return "<div class='empty'>EVENEMENT INTROUVABLE</div>";
+  const att = ev.attendees ? Object.values(ev.attendees) : [];
+  const attEntries = ev.attendees ? Object.entries(ev.attendees) : [];
+  const yes = att.filter(a => a.status === "yes").length;
+  const no = att.filter(a => a.status === "no").length;
+  const pending = att.filter(a => !a.status).length;
+  const isAdmin = state.user.role === "admin";
+  const canRespond =
+    isAdmin ||
+    !ev.allowed ||
+    ev.allowed === "TOUS" ||
+    (Array.isArray(ev.allowed) &&
+     ev.allowed.map(n => n.toUpperCase()).includes(state.user.name.toUpperCase()));
+  return `
+    <div class="event-detail">
+      <div class="ev-header">
+        ${ev.createdAt && (Date.now() - ev.createdAt) < 172800000 ? `<div style="background:#c0392b;color:#fff;font-family:var(--font-mono);font-size:11px;letter-spacing:2px;padding:8px 12px;margin-bottom:12px;text-align:center;">⚡ NOUVEL ORDRE — AJOUTÉ LE ${new Date(ev.createdAt).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})}</div>` : ""}
+        <div class="ev-title-big">${ev.title}</div>
+        <div class="ev-date-big">${formatDate(ev.dateStart)} → ${formatDate(ev.dateEnd)}${ev.location ? " / "+ev.location : ""}</div>
+        ${ev.desc ? `<div class="ev-desc">${ev.desc}</div>` : ""}
+      </div>
+      ${isAdmin ? `<button onclick="delEvent('${state.activeEventId}')" style="width:100%;margin-bottom:16px;background:transparent;border:1px solid var(--red);color:var(--red);font-family:var(--font-mono);font-size:11px;letter-spacing:2px;padding:10px;cursor:pointer;">SUPPRIMER CET ORDRE</button>` : ""}
+      <div class="stats-bar">
+        <div class="stat-box"><span class="stat-num green">${yes}</span><span class="stat-lbl">PRESENTS</span></div>
+        <div class="stat-box"><span class="stat-num red">${no}</span><span class="stat-lbl">ABSENTS</span></div>
+        <div class="stat-box"><span class="stat-num">${pending}</span><span class="stat-lbl">EN ATTENTE</span></div>
+      </div>
+      ${!isAdmin ? `
+      <div class="my-rsvp">
+        <div class="my-rsvp-label">VOTRE REPONSE</div>
+        ${canRespond ? `
+        <div class="rsvp-choice">
+          <button class="rsvp-yes ${state.pendingStatus === 'yes' ? 'active' : ''}" onclick="chooseStatus('yes')">PRESENT</button>
+          <button class="rsvp-no ${state.pendingStatus === 'no' ? 'active' : ''}" onclick="chooseStatus('no')">ABSENT</button>
+        </div>
+        <button class="validate-rsvp" onclick="validateStatus()">VALIDER</button>
+        ` : `
+        <div class="not-concerned">NON CONCERNE PAR CETTE ACTIVITE</div>
+        `}
+      </div>` : ""}
+      <div class="section-label">EFFECTIF — ${att.length} PERSONNE(S)</div>
+      ${isAdmin ? `<div class="add-row"><input id="add-name" type="text" placeholder="AJOUTER GRADE NOM..." autocapitalize="characters"><button onclick="addMember()">+</button></div>` : ""}
+      <div>
+        ${attEntries.length === 0 ? `<div class="empty" style="padding:30px 0">AUCUN MEMBRE AJOUTE</div>` : ""}
+        ${attEntries.map(([aid,a]) => `
+          <div class="attendee-row">
+            <div class="attendee-initial">${a.name[0].toUpperCase()}</div>
+            <div class="attendee-name">${a.name}</div>
+            <div class="attendee-status ${a.status||'pending'}">${a.status==='yes'?'PRESENT':a.status==='no'?'ABSENT':'EN ATT.'}</div>
+            ${isAdmin ? `<button class="del-btn" onclick="delMember('${aid}')">&#10005;</button>` : ""}
+          </div>`).join("")}
+      </div>
+    </div>`;
+}
+ 
+function bindEvents() {
+  const loginName = document.getElementById("login-name");
+  if (loginName) loginName.addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+  const addName = document.getElementById("add-name");
+  if (addName) addName.addEventListener("keydown", e => { if (e.key === "Enter") addMember(); });
+}
+ 
+window.doLogin = function() {
+  const name = document.getElementById("login-name").value.trim().toUpperCase();
+  const role = document.getElementById("login-role").value;
+  const code = document.getElementById("login-code")?.value || "";
+  const errEl = document.getElementById("login-error");
+  if (!name) { errEl.textContent = "IDENTIFIANT REQUIS"; return; }
+  if (role === "admin" && code !== ADMIN_CODE) { errEl.textContent = "CODE INCORRECT"; return; }
+  state.user = { name, role };
+  localStorage.setItem("bleu4-user", JSON.stringify(state.user));
+  state.screen = "calendar";
+  subscribeEvents();
+  render();
+};
+ 
+window.prevMonth = function() { state.currentMonth.setMonth(state.currentMonth.getMonth()-1); render(); };
+window.nextMonth = function() { state.currentMonth.setMonth(state.currentMonth.getMonth()+1); render(); };
+window.goCreate = function() { state.screen = "create"; render(); };
+window.goBack = function() { state.screen = "calendar"; state.pendingStatus = null; render(); };
+window.goEvent = function(id) { state.activeEventId = id; state.pendingStatus = null; state.screen = "event"; render(); };
+ 
+window.doCreate = function() {
+  const title = document.getElementById("f-title").value.trim().toUpperCase();
+  const dateStart = document.getElementById("f-date-start").value;
+  const dateEnd = document.getElementById("f-date-end").value;
+  const loc = document.getElementById("f-loc").value.trim().toUpperCase();
+  const desc = document.getElementById("f-desc").value.trim();
+  const allowedRaw = document.getElementById("f-allowed").value.trim().toUpperCase();
+  if (!title || !dateStart || !dateEnd) return;
+  let allowed;
+  if (!allowedRaw || allowedRaw === "TOUS") {
+    allowed = "TOUS";
+  } else {
+    allowed = allowedRaw.split(",").map(s => s.trim()).filter(Boolean);
+  }
+  const evRef = push(ref(db, "events"));
+  set(evRef, { title, dateStart, dateEnd, location: loc, desc, allowed, createdAt: Date.now(), attendees: {} });
+  state.activeEventId = evRef.key;
+  state.screen = "event";
+  render();
+};
+ 
+window.delEvent = function(id) {
+  remove(ref(db, `events/${id}`));
+  if (state.activeEventId === id) { state.activeEventId = null; state.screen = "calendar"; render(); }
+};
+ 
+window.addMember = function() {
+  const input = document.getElementById("add-name");
+  const name = input.value.trim().toUpperCase();
+  if (!name || !state.activeEventId) return;
+  const ev = state.events[state.activeEventId];
+  if (ev?.attendees && Object.values(ev.attendees).find(a => a.name === name)) { input.value = ""; return; }
+  push(ref(db, `events/${state.activeEventId}/attendees`), { name, status: null });
+  input.value = "";
+};
+ 
+window.delMember = function(aid) { remove(ref(db, `events/${state.activeEventId}/attendees/${aid}`)); };
+ 
+window.chooseStatus = function(status) { state.pendingStatus = status; render(); };
+ 
+window.validateStatus = function() {
+  if (!state.pendingStatus) return;
+  const ev = state.events[state.activeEventId];
+  if (!ev) return;
+  const entries = ev.attendees ? Object.entries(ev.attendees) : [];
+  const myEntry = entries.find(([,a]) => a.name === state.user.name);
+  if (myEntry) {
+    update(ref(db, `events/${state.activeEventId}/attendees/${myEntry[0]}`), { status: state.pendingStatus });
+  } else {
+    push(ref(db, `events/${state.activeEventId}/attendees`), { name: state.user.name, status: state.pendingStatus });
+  }
+  state.pendingStatus = null;
+};
+ 
+function subscribeEvents() {
+  onValue(ref(db, "events"), snap => {
+    state.events = snap.val() || {};
+    render();
+  });
+}
+ 
+function formatDate(str) {
+  if (!str) return "";
+  const [y,m,d] = str.split("-");
+  const months = ["JAN","FEV","MAR","AVR","MAI","JUN","JUL","AOU","SEP","OCT","NOV","DEC"];
+  return `${parseInt(d)} ${months[parseInt(m)-1]} ${y}`;
+}
 function formatDate(str) {
   if (!str) return "";
   const [y,m,d] = str.split("-");
