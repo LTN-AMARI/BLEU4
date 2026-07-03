@@ -2,33 +2,39 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>ACTIVITÉES B4</title>
+    <title>BLEU4 - App</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<!-- TOP BAR -->
 <div id="top-bar">
-    <span id="user-label"></span>
+    <span id="userLabel"></span>
     <button onclick="logout()">DÉCONNEXION</button>
 </div>
 
-<h1>ACTIVITÉES B4</h1>
+<h1>ACTIVITÉS BLEU4</h1>
 
+<!-- CALENDRIER -->
 <div id="calendar"></div>
 
-<div id="createEvent" style="display:none;">
+<!-- CRÉATION MISSION (commandement only) -->
+<div id="create" style="display:none;">
     <h3>CRÉER UNE MISSION</h3>
-    <input id="mission-title" placeholder="Titre de la mission">
+
+    <input id="mission-title" placeholder="Titre">
     <input id="mission-start" type="date">
     <input id="mission-end" type="date">
-    <input id="mission-concerned" placeholder='"tous" ou logins séparés par virgule'>
+    <input id="mission-concerned" placeholder="tous ou logins séparés par virgule">
+
     <button onclick="createMission()">CRÉER</button>
 </div>
 
+<!-- ACTIVITÉS DU JOUR -->
 <div id="activities"></div>
 
-<!-- data.js DOIT être chargé en premier et en type="module" (utilise Firebase) -->
+<!-- SCRIPTS -->
 <script type="module" src="data.js"></script>
 <script defer src="calendar.js"></script>
 
