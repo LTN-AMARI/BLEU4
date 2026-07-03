@@ -1,81 +1,37 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>BLEU4 – Connexion</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <style>
-        body {
-            margin: 0;
-            font-family: system-ui, sans-serif;
-            background: #000;
-            color: #facc15; /* jaune */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            text-align: center;
-        }
-
-        .login-box {
-            width: 90%;
-            max-width: 360px;
-        }
-
-        h1 {
-            font-size: 24px;
-            margin-bottom: 30px;
-            font-weight: 700;
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            margin-top: 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .simple {
-            background: #facc15;
-            color: #000;
-        }
-
-        .cmd {
-            background: #000;
-            color: #facc15;
-            border: 2px solid #facc15;
-        }
-    </style>
+    <title>BLEU4 – Login</title>
 </head>
 
 <body>
-    <div class="login-box">
-        <h1>CALENDRIER OPÉRATIONNEL BLEU4</h1>
 
-        <button class="simple" onclick="enterSimple()">Accès membre simple</button>
-        <button class="cmd" onclick="enterCmd()">Accès commandement</button>
-    </div>
+<h1>Connexion BLEU4</h1>
 
-    <script>
-        function enterSimple() {
-            localStorage.setItem("bleu4_role", "simple");
-            window.location.href = "app.html";
-        }
+<input id="login" placeholder="Login">
+<input id="nom" placeholder="Nom">
+<input id="grade" placeholder="Grade">
 
-        function enterCmd() {
-            const pwd = prompt("Mot de passe commandement :");
-            if (pwd === "BLEU4CDT#") {
-                localStorage.setItem("bleu4_role", "cmd");
-                window.location.href = "app.html";
-            } else {
-                alert("Mot de passe incorrect.");
-            }
-        }
-    </script>
+<select id="role">
+    <option value="membre">Membre</option>
+    <option value="commandement">Commandement</option>
+</select>
+
+<button onclick="connect()">Connexion</button>
+
+<script>
+function connect() {
+    currentUser.login = document.getElementById("login").value;
+    currentUser.nom = document.getElementById("nom").value;
+    currentUser.grade = document.getElementById("grade").value;
+    currentUser.role = document.getElementById("role").value;
+
+    window.location.href = "app.html";
+}
+</script>
+
+<script src="app-logic.js"></script>
+
 </body>
 </html>
