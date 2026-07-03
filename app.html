@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>BLEU4 – Calendrier Opérationnel</title>
+    <title>BLEU4 – Calendrier</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
@@ -21,63 +21,34 @@
             align-items: center;
         }
 
-        header h1 {
-            font-size: 18px;
-            margin: 0;
-        }
-
-        .month-controls {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
         .month-controls button {
             padding: 6px 10px;
             border-radius: 6px;
             border: none;
             background: #2563eb;
             color: #fff;
-            font-size: 14px;
-        }
-
-        .month-label {
-            font-weight: 600;
-        }
-
-        main {
-            padding: 10px;
         }
 
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 4px;
+            padding: 10px;
         }
 
         .weekday {
             text-align: center;
-            font-size: 12px;
             font-weight: 600;
-            color: #4b5563;
-            padding: 4px 0;
+            font-size: 12px;
         }
 
         .day {
             min-height: 52px;
-            padding: 4px;
-            background: #ffffff;
+            background: #fff;
             border-radius: 6px;
             border: 1px solid #e5e7eb;
-            font-size: 13px;
-            display: flex;
-            flex-direction: column;
+            padding: 4px;
             cursor: pointer;
-        }
-
-        .day-number {
-            font-weight: 600;
-            margin-bottom: 4px;
         }
 
         .day.has-event {
@@ -90,86 +61,47 @@
             box-shadow: 0 0 0 1px #2563eb;
         }
 
-        .event-panel,
-        .event-form {
-            margin-top: 12px;
-            background: #ffffff;
-            border-radius: 8px;
+        .event-panel, .event-form {
+            background: #fff;
+            margin: 10px;
             padding: 10px;
+            border-radius: 8px;
             border: 1px solid #e5e7eb;
-        }
-
-        .event-panel h2,
-        .event-form h2 {
-            font-size: 16px;
-            margin: 0 0 8px;
-        }
-
-        .event-item {
-            margin-bottom: 6px;
-        }
-
-        .event-form input,
-        .event-form textarea {
-            width: 100%;
-            padding: 6px 8px;
-            margin-bottom: 8px;
-            border-radius: 6px;
-            border: 1px solid #d1d5db;
-        }
-
-        .event-form button {
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: none;
-            background: #16a34a;
-            color: #fff;
-            font-size: 14px;
-            width: 100%;
-        }
-
-        @media (max-width: 600px) {
-            .day {
-                min-height: 46px;
-                font-size: 12px;
-            }
         }
     </style>
 </head>
 
 <body>
 <header>
-    <h1>BLEU4 – Calendrier Opérationnel</h1>
+    <h1>Calendrier BLEU4</h1>
     <div class="month-controls">
         <button id="prevMonthBtn">◀</button>
-        <span id="monthLabel" class="month-label"></span>
+        <span id="monthLabel"></span>
         <button id="nextMonthBtn">▶</button>
     </div>
 </header>
 
-<main>
-    <div class="calendar" id="calendar"></div>
+<div class="calendar" id="calendar"></div>
 
-    <section class="event-panel">
-        <h2>Activités du jour</h2>
-        <div id="eventList">Aucune activité pour ce jour.</div>
-    </section>
+<div class="event-panel">
+    <h2>Activités du jour</h2>
+    <div id="eventList">Aucune activité.</div>
+</div>
 
-    <section class="event-form">
-        <h2>Créer une activité</h2>
+<div class="event-form">
+    <h2>Créer une activité</h2>
 
-        <label>Date</label>
-        <input type="date" id="eventDate">
+    <label>Date</label>
+    <input type="date" id="eventDate">
 
-        <label>Titre</label>
-        <input type="text" id="eventTitle">
+    <label>Titre</label>
+    <input type="text" id="eventTitle">
 
-        <label>Description</label>
-        <textarea id="eventDesc" rows="3"></textarea>
+    <label>Description</label>
+    <textarea id="eventDesc"></textarea>
 
-        <button id="saveEventBtn">Enregistrer</button>
-    </section>
-</main>
+    <button id="saveEventBtn">Enregistrer</button>
+</div>
 
 <script src="app-logic.js"></script>
 <script src="app.js"></script>
