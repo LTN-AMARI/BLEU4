@@ -1,15 +1,15 @@
-// ============================================================
-// data.js - BLEU 4
-// Gère l'utilisateur, les missions (events), et leur synchronisation
-// EN TEMPS RÉEL avec Firebase, partagée entre tous les membres.
-// ============================================================
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, push, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getDatabase,
+  ref,
+  push,
+  set,
+  onValue,
+  remove
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  const firebaseConfig = {
-  apiKey: "AIzaSyCOTja98aA-0umXrqm2c2k4frUFn6why1o",
+const firebaseConfig = {
+  apiKey: "AIzaSyCOTja98aO-0umXrqm2c2k4frUFn6why1o",
   authDomain: "bleu-4.firebaseapp.com",
   databaseURL: "https://bleu-4-default-rtdb.firebaseio.com",
   projectId: "bleu-4",
@@ -18,72 +18,56 @@ import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gsta
   appId: "1:788139266954:web:c1896f25eb57687846ae73"
 };
 
-const fbApp = initializeApp(firebaseConfig);
-const db = getDatabase(fbApp);
-const auth = getAuth(fbApp);
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-// ------------------------------------------------------------
-// UTILISATEUR CONNECTÉ (chargé depuis localStorage)
-// ------------------------------------------------------------
-let currentUser = {
-    login: "",
-    nom: "",
-    grade: "",
-    role: "membre"
-};
-const saved = localStorage.getItem("BLEU4_USER");
-if (saved) {
-    try { currentUser = JSON.parse(saved); } catch (e) {}
-}
-if (!currentUser.login) {
-    // Personne connectée : retour à l'écran de connexion
-    window.location.href = "index.html";
-}
-window.currentUser = currentUser;
+window.currentUser = JSON.parse(localStorage.getItem("BLEU4_USER"));
+if (!window.currentUser) location.href = "index.html";
 
-window.logout = function() {
-    localStorage.removeItem("BLEU4_USER");
-    window.location.href = "index.html";
+window.logout = () => {
+  localStorage.clear();
+  location.href = "index.html";
 };
 
-// ------------------------------------------------------------
-// MISSIONS (synchronisées en direct depuis Firebase)
-// ------------------------------------------------------------
 let events = [];
 window.events = events;
 
-function addEvent(title, start, end, concernedStr) {
-    let concerned;
-    if (concernedStr.trim().toLowerCase() === "tous") {
-        concerned = "tous";
-    } else {
-        concerned = concernedStr.split(",").map(s => s.trim().toUpperCase());
-    }
-    const evRef = push(ref(db, "events"));
-    set(evRef, {
-        title,
-        start,
-        end,
-        concerned,
-        participants: {},
-        indisponibles: {}
-    });
-}
-window.addEvent = addEvent;
+onValue(ref(db, "events"), (snap) => {
+  events = [];
+  snap.forEach((c) => {
+    events.push({ id: c.key, ...c.val() });
+  });
 
-function canUserParticipate(ev) {
-    if (ev.concerned === "tous") return true;
-    return ev.concerned.includes(currentUser.login);
-}
-window.canUserParticipate = canUserParticipate;
+  if (window.refreshUI) window.refreshUI();
+});
 
-// Firebase n'accepte pas certains caractères dans les clés (. # $ / [ ])
-function safeKey(login) {
-    return login.replace(/[.#$/\[\]]/g, "_");
-}
+window.addEvent = (title, start, end, concerned) => {
+  push(ref(db, "events"), {
+    title,
+    start,
+    end,
+    concerned,
+    participants: {},
+    indisponibles: {}
+  });
+};
 
-function setParticipation(eventId, status) {
-    const ev = events.find(e => e.id === eventId);
-    if (!ev) return;
-    if (!canUserParticipate(ev)) {
-        alert("Vous n'êtes pas concerné par cette mission");
+window.getEventsByDate = (date) => {
+  return events.filter(
+    (e) => e.start <= date && e.end >= date
+  );
+};
+
+window.deleteEvent = (id) => {
+  remove(ref(db, "events/" + id));
+};
+
+window.setParticipation = (id, status) => {
+  const ev = events.find((e) => e.id === id);
+  if (!ev) return;
+
+  if (!ev[status]) ev[status] = {};
+  ev[status][window.currentUser.login] = window.currentUser;
+
+  set(ref(db, "events/" + id), ev);
+};
