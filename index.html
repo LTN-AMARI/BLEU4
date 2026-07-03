@@ -2,95 +2,74 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BLEU4 – Connexion</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #eef2ff;
             margin: 0;
-            padding: 0;
+            font-family: system-ui, sans-serif;
+            background: #eef2ff;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
         }
 
-        .container {
-            background: white;
-            padding: 30px;
+        .login-box {
+            background: #fff;
+            padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            width: 320px;
+            width: 90%;
+            max-width: 360px;
             text-align: center;
+            box-shadow: 0 0 10px #0002;
         }
 
         h1 {
-            color: #1e3a8a;
+            font-size: 20px;
             margin-bottom: 20px;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
         }
 
         button {
             width: 100%;
-            padding: 10px;
-            margin-top: 15px;
-            background: #1e3a8a;
-            color: white;
+            padding: 12px;
+            margin-top: 10px;
             border: none;
             border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
         }
 
-        button:hover {
-            background: #2742b0;
+        .simple {
+            background: #2563eb;
+            color: #fff;
         }
 
-        #error {
-            color: red;
-            margin-top: 10px;
-        }
-
-        .hidden {
-            display: none;
+        .cmd {
+            background: #1e40af;
+            color: #fff;
         }
     </style>
 </head>
 
 <body>
+    <div class="login-box">
+        <h1>CALENDRIER OPÉRATIONNEL BLEU4</h1>
 
-    <div class="container">
-        <h1>BLEU4</h1>
-
-        <button id="simpleBtn">Accès simple</button>
-        <button id="cmdBtn">Accès commandement</button>
-
-        <!-- Formulaire simple -->
-        <div id="simpleForm" class="hidden">
-            <input id="gradeSimple" type="text" placeholder="Grade">
-            <input id="nomSimple" type="text" placeholder="Nom">
-            <button id="loginSimple">Entrer</button>
-        </div>
-
-        <!-- Formulaire commandement -->
-        <div id="cmdForm" class="hidden">
-            <input id="gradeCmd" type="text" placeholder="Grade">
-            <input id="nomCmd" type="text" placeholder="Nom">
-            <input id="passCmd" type="password" placeholder="Mot de passe">
-            <button id="loginCmd">Connexion commandement</button>
-        </div>
-
-        <div id="error"></div>
+        <button class="simple" onclick="enter('simple')">Accès membre simple</button>
+        <button class="cmd" onclick="enter('cmd')">Accès commandement</button>
     </div>
 
-    <script src="app.js"></script>
+    <script>
+        function enter(role) {
+            // Enregistre le rôle pour l'application
+            localStorage.setItem("bleu4_role", role);
+
+            // Redirige vers ton nouveau calendrier
+            window.location.href = "app.html";
+        }
+    </script>
 </body>
 </html>
