@@ -7,13 +7,11 @@ body {
     padding: 0;
 }
 
-/* Titre */
 #main-title {
     font-size: 45px;
     margin-top: 40px;
 }
 
-/* Barre grade nom */
 #grade-bar {
     margin-top: 30px;
     font-size: 22px;
@@ -27,7 +25,6 @@ body {
     border: 1px solid yellow;
 }
 
-/* Rôle */
 #role-box {
     margin-top: 30px;
     font-size: 22px;
