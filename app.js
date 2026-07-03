@@ -1,6 +1,5 @@
 let currentDate = new Date();
 
-// --- Rendu du calendrier ---
 function renderCalendar() {
     const calendar = document.getElementById("calendar");
     const label = document.getElementById("monthLabel");
@@ -44,43 +43,37 @@ function renderCalendar() {
         day.className = "day";
         day.dataset.date = iso;
 
-        const num = document.createElement("div");
-        num.className = "day-number";
-        num.textContent = d;
-        day.appendChild(num);
-
         if (events[iso]) day.classList.add("has-event");
         if (iso === todayISO) day.classList.add("today");
 
-        day.addEventListener("click", () => {
+        day.textContent = d;
+
+        day.onclick = () => {
             updateEventList(iso);
             document.getElementById("eventDate").value = iso;
-        });
+        };
 
         calendar.appendChild(day);
     }
 }
 
-// --- Affichage des activités ---
 function updateEventList(dateISO) {
     const list = document.getElementById("eventList");
     const events = getEventsFor(dateISO);
 
     if (events.length === 0) {
-        list.textContent = "Aucune activité pour ce jour.";
+        list.textContent = "Aucune activité.";
         return;
     }
 
     list.innerHTML = "";
     events.forEach(evt => {
         const item = document.createElement("div");
-        item.className = "event-item";
-        item.innerHTML = `<strong>${evt.title}</strong><br>${evt.desc || ""}`;
+        item.innerHTML = `<strong>${evt.title}</strong><br>${evt.desc}`;
         list.appendChild(item);
     });
 }
 
-// --- Formulaire ---
 function setupForm() {
     const dateInput = document.getElementById("eventDate");
     const titleInput = document.getElementById("eventTitle");
@@ -89,13 +82,13 @@ function setupForm() {
 
     dateInput.value = formatISO(new Date());
 
-    saveBtn.addEventListener("click", () => {
+    saveBtn.onclick = () => {
         const dateISO = dateInput.value;
         const title = titleInput.value.trim();
         const desc = descInput.value.trim();
 
         if (!title) {
-            alert("Le titre est obligatoire.");
+            alert("Titre obligatoire.");
             return;
         }
 
@@ -107,10 +100,9 @@ function setupForm() {
         alert("Activité enregistrée !");
         titleInput.value = "";
         descInput.value = "";
-    });
+    };
 }
 
-// --- Navigation ---
 function setupNavigation() {
     document.getElementById("prevMonthBtn").onclick = () => {
         currentDate.setMonth(currentDate.getMonth() - 1);
@@ -123,23 +115,20 @@ function setupNavigation() {
     };
 }
 
-// --- Popup au démarrage ---
 function startupPopup() {
     const todayISO = formatISO(new Date());
     const events = getEventsFor(todayISO);
 
     if (events.length > 0) {
         const txt = events.map(e => "• " + e.title).join("\n");
-        alert("Activités prévues aujourd'hui :\n\n" + txt);
+        alert("Activités aujourd'hui :\n\n" + txt);
     }
 }
 
-// --- Initialisation ---
-window.addEventListener("DOMContentLoaded", () => {
+window.onload = () => {
     setupNavigation();
     setupForm();
     renderCalendar();
-
     updateEventList(formatISO(new Date()));
     startupPopup();
-});
+};
