@@ -3,35 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <title>BLEU4 – Login</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<h1>Connexion BLEU4</h1>
+<div id="top-bar">
+    <span id="grade-nom">GRADE NOM : 1CL PINGOUIN</span>
+</div>
 
-<input id="login" placeholder="Login">
-<input id="nom" placeholder="Nom">
-<input id="grade" placeholder="Grade">
+<div id="login-box">
+    <h1>Connexion BLEU4</h1>
 
-<select id="role">
-    <option value="membre">Membre</option>
-    <option value="commandement">Commandement</option>
-</select>
+    <label>Login</label>
+    <input id="login" placeholder="Login">
 
-<button onclick="connect()">Connexion</button>
+    <label>Nom</label>
+    <input id="nom" placeholder="Nom">
 
+    <label>Grade</label>
+    <input id="grade" placeholder="Grade">
+
+    <label>Rôle</label>
+    <select id="role">
+        <option value="membre">Membre</option>
+        <option value="commandement">Commandement</option>
+    </select>
+
+    <button onclick="connect()">Entrer</button>
+</div>
+
+<script src="app-logic.js"></script>
 <script>
 function connect() {
     currentUser.login = document.getElementById("login").value;
-    currentUser.nom = document.getElementById("nom").value;
+    currentUser.nom   = document.getElementById("nom").value;
     currentUser.grade = document.getElementById("grade").value;
-    currentUser.role = document.getElementById("role").value;
+    currentUser.role  = document.getElementById("role").value;
+
+    // Exemple dans la barre
+    document.getElementById("grade-nom").textContent =
+        "GRADE NOM : " + currentUser.grade + " " + currentUser.nom;
 
     window.location.href = "app.html";
 }
 </script>
-
-<script src="app-logic.js"></script>
 
 </body>
 </html>
