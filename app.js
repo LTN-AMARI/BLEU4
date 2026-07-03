@@ -1,10 +1,6 @@
 let currentMonth = new Date().getMonth();
 let currentYear  = new Date().getFullYear();
 
-// =========================
-// CALENDRIER
-// =========================
-
 function renderCalendar() {
     const calendarDiv = document.getElementById("calendar");
     calendarDiv.innerHTML = "";
@@ -64,10 +60,6 @@ function renderCalendar() {
     calendarDiv.appendChild(table);
 }
 
-// =========================
-// CHANGEMENT DE MOIS
-// =========================
-
 function prevMonth() {
     currentMonth--;
     if (currentMonth < 0) {
@@ -85,10 +77,6 @@ function nextMonth() {
     }
     renderCalendar();
 }
-
-// =========================
-// ACTIVITÉS DU JOUR
-// =========================
 
 function onDayClick(day, month, year) {
     const dateStr = `${year}-${String(month).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
@@ -139,10 +127,6 @@ function showDayActivities(dateStr) {
     });
 }
 
-// =========================
-// CRÉATION MISSION
-// =========================
-
 function initCreateForm() {
     const box = document.getElementById("createEvent");
     box.style.display = currentUser.role === "commandement" ? "block" : "none";
@@ -163,10 +147,6 @@ function createMission() {
     alert("Mission créée.");
     renderCalendar();
 }
-
-// =========================
-// INIT
-// =========================
 
 window.onload = function() {
     renderCalendar();
