@@ -1,69 +1,79 @@
-function formatISO(date) {
-    return date.toISOString().split("T")[0];
-}
+// =========================
+// BASE DE DONNÉES ACTIVITÉS
+// =========================
 
-function monthLabel(date) {
-    const m = [
-        "Janvier","Février","Mars","Avril","Mai","Juin",
-        "Juillet","Août","Septembre","Octobre","Novembre","Décembre"
-    ];
-    return m[date.getMonth()] + " " + date.getFullYear();
-}
+let events = []; 
+// Structure :
+// {
+//   id: number,
+//   title: string,
+//   description: string,
+//   start: string,
+//   end: string,
+//   participants: [ {login, grade, nom} ],
+//   indisponibles: [ {login, grade, nom} ]
+// }
 
-function loadEvents() {
-    return JSON.parse(localStorage.getItem("events") || "{}");
-}
+// =========================
+// UTILISATEUR CONNECTÉ
+// =========================
 
-function saveEvents(events) {
-    localStorage.setItem("events", JSON.stringify(events));
-}
+let currentUser = {
+    login: "",
+    grade: "",
+    nom: "",
+    role: "membre" // "membre" ou "commandement"
+};
 
-function getEventsFor(dateISO) {
-    const events = loadEvents();
-    return events[dateISO] || [];
-}
+// =========================
+// AJOUT D’UNE ACTIVITÉ
+// =========================
 
-function addEvent(startISO, endISO, title, desc) {
-    const events = loadEvents();
-
-    let current = new Date(startISO);
-    const end = new Date(endISO);
-
-    while (current <= end) {
-        const iso = formatISO(current);
-        if (!events[iso]) events[iso] = [];
-        events[iso].push({
-            title,
-            desc,
-            start: startISO,
-            end: endISO,
-            participants: [],
-            unavailable: []
-        });
-        current.setDate(current.getDate() + 1);
-    }
-
-    saveEvents(events);
-}
-
-function setParticipation(dateISO, status) {
-    const role = localStorage.getItem("bleu4_role");
-    const name = localStorage.getItem("bleu4_name") || "Membre";
-
-    const events = loadEvents();
-    const list = events[dateISO] || [];
-
-    list.forEach(evt => {
-        evt.participants = evt.participants || [];
-        evt.unavailable = evt.unavailable || [];
-
-        evt.participants = evt.participants.filter(n => n !== name);
-        evt.unavailable = evt.unavailable.filter(n => n !== name);
-
-        if (status === "ok") evt.participants.push(name);
-        if (status === "no") evt.unavailable.push(name);
+function addEvent(title, description, start, end) {
+    const id = Date.now();
+    events.push({
+        id,
+        title,
+        description,
+        start,
+        end,
+        participants: [],
+        indisponibles: []
     });
+}
 
-    events[dateISO] = list;
-    saveEvents(events);
+// =========================
+// PARTICIPATION / INDISPO
+// =========================
+
+function setParticipation(eventId, status) {
+    const ev = events.find(e => e.id === eventId);
+    if (!ev) return;
+
+    // Supprimer l’utilisateur des deux listes
+    ev.participants = ev.participants.filter(u => u.login !== currentUser.login);
+    ev.indisponibles = ev.indisponibles.filter(u => u.login !== currentUser.login);
+
+    // Ajouter dans la bonne liste
+    if (status === "participant") {
+        ev.participants.push({
+            login: currentUser.login,
+            grade: currentUser.grade,
+            nom: currentUser.nom
+        });
+    } else if (status === "indisponible") {
+        ev.indisponibles.push({
+            login: currentUser.login,
+            grade: currentUser.grade,
+            nom: currentUser.nom
+        });
+    }
+}
+
+// =========================
+// RÉCUPÉRER LES ACTIVITÉS D’UN JOUR
+// =========================
+
+function getEventsByDate(dateStr) {
+    return events.filter(ev => dateStr >= ev.start && dateStr <= ev.end);
 }
