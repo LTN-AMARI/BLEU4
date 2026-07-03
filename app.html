@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BLEU4 APP</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+<span id="userLabel"></span>
+<button onclick="logout()">LOGOUT</button>
+</div>
+
+<h2>CALENDRIER BLEU4</h2>
+
+<div id="calendar"></div>
+
+<div id="create" class="card hidden">
+<h3>Créer mission</h3>
+
+<input id="title" placeholder="titre">
+<input id="start" type="date">
+<input id="end" type="date">
+<input id="concerned" placeholder="tous ou logins">
+
+<button onclick="addMission()">Créer</button>
+</div>
+
+<div id="activities"></div>
+
+<script type="module" src="data.js"></script>
+<script defer src="calendar.js"></script>
+
+</body>
+</html>
