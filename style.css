@@ -1,67 +1,30 @@
 /* ============================
-   STYLE GÉNÉRAL BLEU4
+   STYLE BLEU4 ORIGINAL
    ============================ */
 
 body {
-    background: #0a0a0a;
-    color: white;
+    background-color: black;
+    color: yellow;
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
 }
 
+/* Titres */
 h1, h2, h3, h4 {
+    color: yellow;
     text-align: center;
-    margin-top: 20px;
 }
 
-/* ============================
-   CALENDRIER
-   ============================ */
-
-#calendar {
-    width: 90%;
-    margin: auto;
-    margin-top: 20px;
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-}
-
-.day {
-    border: 1px solid #444;
-    padding: 10px;
-    text-align: center;
-    cursor: pointer;
-    background: #1a1a1a;
-}
-
-.day:hover {
-    background: #333;
-}
-
-/* ============================
-   ACTIVITÉS
-   ============================ */
-
-#activities {
-    width: 90%;
-    margin: auto;
-    margin-top: 20px;
-}
-
+/* Boîtes d'activités */
 .event-box {
-    background: #1a1a1a;
-    border: 1px solid #444;
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 6px;
+    background-color: #111;
+    border: 1px solid yellow;
+    padding: 10px;
+    margin-bottom: 15px;
 }
 
-/* ============================
-   COULEURS PARTICIPANTS / INDISPO
-   ============================ */
-
+/* Texte vert / rouge */
 .green {
     color: #00ff00;
     font-weight: bold;
@@ -72,76 +35,45 @@ h1, h2, h3, h4 {
     font-weight: bold;
 }
 
-/* ============================
-   BOUTONS
-   ============================ */
-
+/* Boutons */
 button {
     padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
+    border: 1px solid yellow;
+    background-color: #222;
+    color: yellow;
     cursor: pointer;
-    font-weight: bold;
     margin-right: 10px;
 }
 
+button:hover {
+    background-color: #333;
+}
+
+/* Boutons spéciaux */
 .btn-green {
-    background: #00aa00;
-    color: white;
+    background-color: #003300;
+    color: #00ff00;
 }
 
 .btn-red {
-    background: #cc0000;
-    color: white;
+    background-color: #330000;
+    color: #ff4444;
 }
 
-.btn-green:hover {
-    background: #00cc00;
-}
-
-.btn-red:hover {
-    background: #ff0000;
-}
-
-/* ============================
-   FORMULAIRE CRÉATION ACTIVITÉ
-   ============================ */
-
+/* Formulaire création activité */
 #createEvent {
-    width: 90%;
-    margin: auto;
-    margin-top: 30px;
-    background: #1a1a1a;
-    padding: 20px;
-    border: 1px solid #444;
-    border-radius: 6px;
+    background-color: #111;
+    border: 1px solid yellow;
+    padding: 15px;
+    margin-top: 20px;
 }
 
 #createEvent input,
 #createEvent textarea {
     width: 100%;
+    background-color: black;
+    color: yellow;
+    border: 1px solid yellow;
+    padding: 6px;
     margin-bottom: 10px;
-    padding: 8px;
-    background: #222;
-    color: white;
-    border: 1px solid #555;
-    border-radius: 4px;
-}
-
-#createEvent button {
-    width: 100%;
-    margin-top: 10px;
-}
-
-/* ============================
-   LISTES
-   ============================ */
-
-ul {
-    list-style: none;
-    padding-left: 0;
-}
-
-li {
-    margin-bottom: 5px;
 }
