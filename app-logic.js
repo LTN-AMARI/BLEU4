@@ -1,20 +1,4 @@
 // =========================
-// BASE DE DONNÉES ACTIVITÉS
-// =========================
-
-let events = []; 
-// Structure :
-// {
-//   id: number,
-//   title: string,
-//   description: string,
-//   start: string,
-//   end: string,
-//   participants: [ {login, grade, nom} ],
-//   indisponibles: [ {login, grade, nom} ]
-// }
-
-// =========================
 // UTILISATEUR CONNECTÉ
 // =========================
 
@@ -22,21 +6,47 @@ let currentUser = {
     login: "",
     grade: "",
     nom: "",
-    role: "membre" // "membre" ou "commandement"
+    role: "membre" // ou "commandement"
 };
 
 // =========================
-// AJOUT D’UNE ACTIVITÉ
+// BASE DE DONNÉES ACTIVITÉS
 // =========================
 
-function addEvent(title, description, start, end) {
+let events = [];
+// {
+//   id: number,
+//   title: string,
+//   start: string (YYYY-MM-DD),
+//   end: string (YYYY-MM-DD),
+//   concerned: "tous" ou [ "login1", "login2", ... ],
+//   participants: [ {login, grade, nom} ],
+//   indisponibles: [ {login, grade, nom} ]
+// }
+
+// =========================
+// CRÉATION D’ÉVÈNEMENT
+// =========================
+
+function addEvent(title, start, end, concernedStr) {
     const id = Date.now();
+
+    let concerned;
+    if (concernedStr.trim().toLowerCase() === "tous") {
+        concerned = "tous";
+    } else {
+        concerned = concernedStr
+            .split(",")
+            .map(s => s.trim())
+            .filter(s => s.length > 0);
+    }
+
     events.push({
         id,
         title,
-        description,
         start,
         end,
+        concerned,
         participants: [],
         indisponibles: []
     });
@@ -46,15 +56,25 @@ function addEvent(title, description, start, end) {
 // PARTICIPATION / INDISPO
 // =========================
 
+function canUserParticipate(ev) {
+    if (ev.concerned === "tous") return true;
+    return ev.concerned.includes(currentUser.login);
+}
+
 function setParticipation(eventId, status) {
     const ev = events.find(e => e.id === eventId);
     if (!ev) return;
 
-    // Supprimer l’utilisateur des deux listes
+    if (!canUserParticipate(ev)) {
+        alert("Vous n'êtes pas concerné par cette mission");
+        return;
+    }
+
+    // Retirer des deux listes
     ev.participants = ev.participants.filter(u => u.login !== currentUser.login);
     ev.indisponibles = ev.indisponibles.filter(u => u.login !== currentUser.login);
 
-    // Ajouter dans la bonne liste
+    // Ajouter dans la bonne
     if (status === "participant") {
         ev.participants.push({
             login: currentUser.login,
