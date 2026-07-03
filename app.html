@@ -9,24 +9,27 @@
         body {
             margin: 0;
             font-family: system-ui, sans-serif;
-            background: #f5f7fb;
+            background: #111;
+            color: #facc15;
         }
 
         header {
             padding: 12px 16px;
-            background: #1e3a8a;
-            color: #fff;
+            background: #000;
+            color: #facc15;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 2px solid #facc15;
         }
 
         .month-controls button {
-            padding: 6px 10px;
-            border-radius: 6px;
+            padding: 8px 12px;
+            background: #facc15;
+            color: #000;
             border: none;
-            background: #2563eb;
-            color: #fff;
+            border-radius: 6px;
+            font-weight: 700;
         }
 
         .calendar {
@@ -38,35 +41,59 @@
 
         .weekday {
             text-align: center;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 12px;
+            color: #facc15;
         }
 
         .day {
             min-height: 52px;
-            background: #fff;
+            background: #222;
             border-radius: 6px;
-            border: 1px solid #e5e7eb;
-            padding: 4px;
+            border: 1px solid #333;
+            padding: 6px;
             cursor: pointer;
+            color: #facc15;
         }
 
         .day.has-event {
-            background: #fff7e6;
-            border-color: #f59e0b;
+            background: #facc15;
+            color: #000;
+            border-color: #000;
+            font-weight: 700;
         }
 
         .day.today {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 1px #2563eb;
+            border: 2px solid #facc15;
         }
 
         .event-panel, .event-form {
-            background: #fff;
+            background: #000;
             margin: 10px;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
-            border: 1px solid #e5e7eb;
+            border: 1px solid #facc15;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 6px;
+            border-radius: 6px;
+            border: 1px solid #facc15;
+            background: #222;
+            color: #facc15;
+        }
+
+        button#saveEventBtn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background: #facc15;
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
         }
     </style>
 </head>
