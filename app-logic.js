@@ -23,9 +23,47 @@ function getEventsFor(dateISO) {
     return events[dateISO] || [];
 }
 
-function addEvent(dateISO, title, desc) {
+function addEvent(startISO, endISO, title, desc) {
     const events = loadEvents();
-    if (!events[dateISO]) events[dateISO] = [];
-    events[dateISO].push({ title, desc });
+
+    let current = new Date(startISO);
+    const end = new Date(endISO);
+
+    while (current <= end) {
+        const iso = formatISO(current);
+        if (!events[iso]) events[iso] = [];
+        events[iso].push({
+            title,
+            desc,
+            start: startISO,
+            end: endISO,
+            participants: [],
+            unavailable: []
+        });
+        current.setDate(current.getDate() + 1);
+    }
+
+    saveEvents(events);
+}
+
+function setParticipation(dateISO, status) {
+    const role = localStorage.getItem("bleu4_role");
+    const name = localStorage.getItem("bleu4_name") || "Membre";
+
+    const events = loadEvents();
+    const list = events[dateISO] || [];
+
+    list.forEach(evt => {
+        evt.participants = evt.participants || [];
+        evt.unavailable = evt.unavailable || [];
+
+        evt.participants = evt.participants.filter(n => n !== name);
+        evt.unavailable = evt.unavailable.filter(n => n !== name);
+
+        if (status === "ok") evt.participants.push(name);
+        if (status === "no") evt.unavailable.push(name);
+    });
+
+    events[dateISO] = list;
     saveEvents(events);
 }
