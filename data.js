@@ -9,13 +9,11 @@ import { getDatabase, ref, push, set, update, onValue } from "https://www.gstati
 import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCOTja98aA-0umXrqm2c2k4frUFn6why1o",
+  const firebaseConfig = {
+  apiKey: "...",
   authDomain: "bleu-4.firebaseapp.com",
   databaseURL: "https://bleu-4-default-rtdb.firebaseio.com",
   projectId: "bleu-4",
-  storageBucket: "bleu-4.firebasestorage.app",
-  messagingSenderId: "788139266954",
-  appId: "1:788139266954:web:c1896f25eb57687846ae73"
 };
 
 const fbApp = initializeApp(firebaseConfig);
