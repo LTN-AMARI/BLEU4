@@ -1,4 +1,4 @@
-// UTILISATEUR CONNECTÉ
+// UTILISATEUR CONNECTÉ (chargé depuis localStorage)
 let currentUser = {
     login: "",
     nom: "",
@@ -6,14 +6,16 @@ let currentUser = {
     role: "membre"
 };
 
-// BASE DE DONNÉES ACTIVITÉS
+const saved = localStorage.getItem("BLEU4_USER");
+if (saved) {
+    try {
+        const u = JSON.parse(saved);
+        currentUser = u;
+    } catch (e) {}
+}
+
+// BASE DE DONNÉES ACTIVITÉS (en mémoire)
 let events = [];
-// {
-//   id, title, start, end,
-//   concerned: "tous" ou ["login1","login2"],
-//   participants: [ {login, grade, nom} ],
-//   indisponibles: [ {login, grade, nom} ]
-// }
 
 // CRÉATION D’UNE MISSION
 function addEvent(title, start, end, concernedStr) {
