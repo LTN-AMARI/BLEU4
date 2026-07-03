@@ -8,11 +8,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getDatabase, ref, push, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-const firebaseConfig = {
   const firebaseConfig = {
   apiKey: "...",
   authDomain: "bleu-4.firebaseapp.com",
-  databaseURL: "https://bleu-4-default-rtdb.firebaseio.com",
+  databaseURL: "https://console.firebase.google.com/project/bleu-4/database/bleu-4-default-rtdb/data/~2F",
   projectId: "bleu-4",
 };
 
