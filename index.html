@@ -65,7 +65,7 @@ function connect() {
     const parts = gradeNom.split(" ");
     currentUser.grade = parts[0];
     currentUser.nom   = parts.slice(1).join(" ");
-    currentUser.login = currentUser.nom.toUpperCase(); // login simple
+    currentUser.login = currentUser.nom.toUpperCase();
     currentUser.role  = role;
 
     window.location.href = "app.html";
