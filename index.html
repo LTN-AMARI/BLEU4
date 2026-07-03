@@ -25,15 +25,14 @@
 
     <div id="password-box" style="display:none;">
         <label>Mot de passe COMMANDEMENT :</label>
-        <input id="password" type="password" placeholder="MDP">
+        <input id="password" type="password">
     </div>
 
     <button onclick="connect()">ENTRER</button>
 </div>
 
-<script src="app-logic.js"></script>
-
 <script>
+// affichage champ mot de passe
 document.getElementById("role").addEventListener("change", function() {
     document.getElementById("password-box").style.display =
         this.value === "commandement" ? "block" : "none";
@@ -57,10 +56,17 @@ function connect() {
     }
 
     const parts = gradeNom.split(" ");
-    currentUser.grade = parts[0];
-    currentUser.nom   = parts.slice(1).join(" ");
-    currentUser.login = currentUser.nom.toUpperCase();
-    currentUser.role  = role;
+    const grade = parts[0];
+    const nom   = parts.slice(1).join(" ");
+
+    // on stocke dans localStorage
+    const user = {
+        grade: grade,
+        nom: nom,
+        login: nom.toUpperCase(),
+        role: role
+    };
+    localStorage.setItem("BLEU4_USER", JSON.stringify(user));
 
     window.location.href = "app.html";
 }
