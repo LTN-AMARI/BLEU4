@@ -9,47 +9,46 @@
         body {
             margin: 0;
             font-family: system-ui, sans-serif;
-            background: #eef2ff;
+            background: #000;
+            color: #facc15; /* jaune */
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            text-align: center;
         }
 
         .login-box {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
             width: 90%;
             max-width: 360px;
-            text-align: center;
-            box-shadow: 0 0 10px #0002;
         }
 
         h1 {
-            font-size: 20px;
-            margin-bottom: 20px;
+            font-size: 24px;
+            margin-bottom: 30px;
+            font-weight: 700;
         }
 
         button {
             width: 100%;
-            padding: 12px;
-            margin-top: 10px;
+            padding: 14px;
+            margin-top: 12px;
             border: none;
             border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 18px;
+            font-weight: 700;
             cursor: pointer;
         }
 
         .simple {
-            background: #2563eb;
-            color: #fff;
+            background: #facc15;
+            color: #000;
         }
 
         .cmd {
-            background: #1e40af;
-            color: #fff;
+            background: #000;
+            color: #facc15;
+            border: 2px solid #facc15;
         }
     </style>
 </head>
@@ -58,14 +57,24 @@
     <div class="login-box">
         <h1>CALENDRIER OPÉRATIONNEL BLEU4</h1>
 
-        <button class="simple" onclick="enter('simple')">Accès membre simple</button>
-        <button class="cmd" onclick="enter('cmd')">Accès commandement</button>
+        <button class="simple" onclick="enterSimple()">Accès membre simple</button>
+        <button class="cmd" onclick="enterCmd()">Accès commandement</button>
     </div>
 
     <script>
-        function enter(role) {
-            localStorage.setItem("bleu4_role", role);
+        function enterSimple() {
+            localStorage.setItem("bleu4_role", "simple");
             window.location.href = "app.html";
+        }
+
+        function enterCmd() {
+            const pwd = prompt("Mot de passe commandement :");
+            if (pwd === "BLEU4CDT#") {
+                localStorage.setItem("bleu4_role", "cmd");
+                window.location.href = "app.html";
+            } else {
+                alert("Mot de passe incorrect.");
+            }
         }
     </script>
 </body>
