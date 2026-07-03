@@ -4,9 +4,9 @@
 
 let currentUser = {
     login: "",
-    grade: "",
     nom: "",
-    role: "membre" // ou "commandement"
+    grade: "",
+    role: "membre"
 };
 
 // =========================
@@ -14,18 +14,19 @@ let currentUser = {
 // =========================
 
 let events = [];
+// Structure :
 // {
 //   id: number,
 //   title: string,
-//   start: string (YYYY-MM-DD),
-//   end: string (YYYY-MM-DD),
-//   concerned: "tous" ou [ "login1", "login2", ... ],
+//   start: "YYYY-MM-DD",
+//   end: "YYYY-MM-DD",
+//   concerned: "tous" ou ["login1","login2"],
 //   participants: [ {login, grade, nom} ],
 //   indisponibles: [ {login, grade, nom} ]
 // }
 
 // =========================
-// CRÉATION D’ÉVÈNEMENT
+// CRÉATION D’UNE MISSION
 // =========================
 
 function addEvent(title, start, end, concernedStr) {
@@ -35,10 +36,7 @@ function addEvent(title, start, end, concernedStr) {
     if (concernedStr.trim().toLowerCase() === "tous") {
         concerned = "tous";
     } else {
-        concerned = concernedStr
-            .split(",")
-            .map(s => s.trim())
-            .filter(s => s.length > 0);
+        concerned = concernedStr.split(",").map(s => s.trim());
     }
 
     events.push({
@@ -53,13 +51,17 @@ function addEvent(title, start, end, concernedStr) {
 }
 
 // =========================
-// PARTICIPATION / INDISPO
+// VÉRIFICATION SI CONCERNÉ
 // =========================
 
 function canUserParticipate(ev) {
     if (ev.concerned === "tous") return true;
     return ev.concerned.includes(currentUser.login);
 }
+
+// =========================
+// PARTICIPATION / INDISPO
+// =========================
 
 function setParticipation(eventId, status) {
     const ev = events.find(e => e.id === eventId);
@@ -70,18 +72,16 @@ function setParticipation(eventId, status) {
         return;
     }
 
-    // Retirer des deux listes
     ev.participants = ev.participants.filter(u => u.login !== currentUser.login);
     ev.indisponibles = ev.indisponibles.filter(u => u.login !== currentUser.login);
 
-    // Ajouter dans la bonne
     if (status === "participant") {
         ev.participants.push({
             login: currentUser.login,
             grade: currentUser.grade,
             nom: currentUser.nom
         });
-    } else if (status === "indisponible") {
+    } else {
         ev.indisponibles.push({
             login: currentUser.login,
             grade: currentUser.grade,
@@ -91,7 +91,7 @@ function setParticipation(eventId, status) {
 }
 
 // =========================
-// RÉCUPÉRER LES ACTIVITÉS D’UN JOUR
+// ACTIVITÉS D’UN JOUR
 // =========================
 
 function getEventsByDate(dateStr) {
