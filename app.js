@@ -1,6 +1,7 @@
 let currentMonth = new Date().getMonth();
 let currentYear  = new Date().getFullYear();
 
+// CALENDRIER
 function renderCalendar() {
     const calendarDiv = document.getElementById("calendar");
     calendarDiv.innerHTML = "";
@@ -13,13 +14,14 @@ function renderCalendar() {
     const header = document.createElement("div");
     header.className = "cal-header";
     header.innerHTML = `
-        <button onclick="prevMonth()">◀</button>
-        <span>${months[currentMonth]} ${currentYear}</span>
-        <button onclick="nextMonth()">▶</button>
+        <button class="nav-btn" onclick="prevMonth()">◀</button>
+        <span class="month-label">${months[currentMonth]} ${currentYear}</span>
+        <button class="nav-btn" onclick="nextMonth()">▶</button>
     `;
     calendarDiv.appendChild(header);
 
     const table = document.createElement("table");
+    table.className = "cal-table";
     table.innerHTML = `
         <thead>
             <tr>
@@ -41,6 +43,7 @@ function renderCalendar() {
 
         for (let d = 0; d < 7; d++) {
             const td = document.createElement("td");
+            td.className = "cal-cell";
 
             if (week === 0 && d < startDay || day > daysInMonth) {
                 td.textContent = "";
@@ -78,6 +81,7 @@ function nextMonth() {
     renderCalendar();
 }
 
+// ACTIVITÉS DU JOUR
 function onDayClick(day, month, year) {
     const dateStr = `${year}-${String(month).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
     showDayActivities(dateStr);
@@ -127,6 +131,7 @@ function showDayActivities(dateStr) {
     });
 }
 
+// FORMULAIRE CRÉATION MISSION
 function initCreateForm() {
     const box = document.getElementById("createEvent");
     box.style.display = currentUser.role === "commandement" ? "block" : "none";
