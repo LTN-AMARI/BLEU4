@@ -16,11 +16,11 @@ body {
 /* Barre grade nom */
 #grade-bar {
     margin-top: 30px;
-    font-size: 20px;
+    font-size: 22px;
 }
 
 #grade-bar input {
-    width: 250px;
+    width: 260px;
     padding: 8px;
     background: black;
     color: yellow;
@@ -30,7 +30,7 @@ body {
 /* Rôle */
 #role-box {
     margin-top: 30px;
-    font-size: 20px;
+    font-size: 22px;
 }
 
 #role-box select,
