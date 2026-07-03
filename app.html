@@ -5,32 +5,47 @@
     <title>BLEU4 – Calendrier</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+
+<div id="top-bar">
+    <span id="grade-nom">GRADE NOM : 1CL PINGOUIN</span>
+    <span id="role-display"></span>
+</div>
 
 <h1>Calendrier BLEU4</h1>
 
 <div id="calendar"></div>
 
-<h2>Activités du jour</h2>
 <div id="activities"></div>
 
-<h2>Créer une activité</h2>
 <div id="createEvent">
-    <input id="start" type="date">
-    <input id="end" type="date">
-    <input id="title" type="text" placeholder="Titre">
-    <textarea id="desc" placeholder="Description"></textarea>
-    <button onclick="addEvent(
-        document.getElementById('title').value,
-        document.getElementById('desc').value,
-        document.getElementById('start').value,
-        document.getElementById('end').value
-    )">Enregistrer</button>
+    <h2>Créer une mission (COMMANDEMENT)</h2>
+
+    <label>Nom de la mission</label>
+    <input id="mission-title" type="text" placeholder="Nom de la mission">
+
+    <label>Date de début</label>
+    <input id="mission-start" type="date">
+
+    <label>Date de fin</label>
+    <input id="mission-end" type="date">
+
+    <label>Personnel concernés</label>
+    <p>Mettre <strong>tous</strong> ou une liste de logins séparés par des virgules (ex: SGT_DUPON, CPL_DURAND)</p>
+    <input id="mission-concerned" type="text" placeholder="tous ou logins">
+
+    <button onclick="createMission()">Créer la mission</button>
 </div>
 
 <script src="app-logic.js"></script>
 <script src="app.js"></script>
+<script>
+// Affichage barre grade/nom/role
+document.getElementById("grade-nom").textContent =
+    "GRADE NOM : " + currentUser.grade + " " + currentUser.nom;
+document.getElementById("role-display").textContent =
+    "Rôle : " + currentUser.role.toUpperCase();
+</script>
 
 </body>
 </html>
