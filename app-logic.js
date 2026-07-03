@@ -1,7 +1,3 @@
-// =========================
-// UTILISATEUR CONNECTÉ
-// =========================
-
 let currentUser = {
     login: "",
     nom: "",
@@ -9,25 +5,7 @@ let currentUser = {
     role: "membre"
 };
 
-// =========================
-// BASE DE DONNÉES ACTIVITÉS
-// =========================
-
 let events = [];
-// Structure :
-// {
-//   id: number,
-//   title: string,
-//   start: "YYYY-MM-DD",
-//   end: "YYYY-MM-DD",
-//   concerned: "tous" ou ["login1","login2"],
-//   participants: [ {login, grade, nom} ],
-//   indisponibles: [ {login, grade, nom} ]
-// }
-
-// =========================
-// CRÉATION D’UNE MISSION
-// =========================
 
 function addEvent(title, start, end, concernedStr) {
     const id = Date.now();
@@ -50,18 +28,10 @@ function addEvent(title, start, end, concernedStr) {
     });
 }
 
-// =========================
-// VÉRIFICATION SI CONCERNÉ
-// =========================
-
 function canUserParticipate(ev) {
     if (ev.concerned === "tous") return true;
     return ev.concerned.includes(currentUser.login);
 }
-
-// =========================
-// PARTICIPATION / INDISPO
-// =========================
 
 function setParticipation(eventId, status) {
     const ev = events.find(e => e.id === eventId);
@@ -89,10 +59,6 @@ function setParticipation(eventId, status) {
         });
     }
 }
-
-// =========================
-// ACTIVITÉS D’UN JOUR
-// =========================
 
 function getEventsByDate(dateStr) {
     return events.filter(ev => dateStr >= ev.start && dateStr <= ev.end);
