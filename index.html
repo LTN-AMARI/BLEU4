@@ -2,47 +2,84 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>BLEU4 – Login</title>
+    <title>ACTIVITÉES B4</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<div id="top-bar">
-    <span id="grade-nom">GRADE NOM : 1CL PINGOUIN</span>
+<!-- TITRE PRINCIPAL -->
+<h1 id="main-title">ACTIVITÉES B4</h1>
+
+<!-- BARRE GRADE NOM -->
+<div id="grade-bar">
+    GRADE NOM : Ex: SDT PINGOUIN
 </div>
 
+<!-- CHOIX DU RÔLE -->
 <div id="login-box">
-    <h1>Connexion BLEU4</h1>
+
+    <h2>Connexion</h2>
 
     <label>Login</label>
-    <input id="login" placeholder="Login">
+    <input id="login" placeholder="Votre login">
 
     <label>Nom</label>
-    <input id="nom" placeholder="Nom">
+    <input id="nom" placeholder="Votre nom">
 
     <label>Grade</label>
-    <input id="grade" placeholder="Grade">
+    <input id="grade" placeholder="Votre grade">
 
-    <label>Rôle</label>
+    <label>Choisir un rôle</label>
     <select id="role">
-        <option value="membre">Membre</option>
-        <option value="commandement">Commandement</option>
+        <option value="membre">MEMBRE</option>
+        <option value="commandement">COMMANDEMENT</option>
     </select>
+
+    <div id="password-box" style="display:none;">
+        <label>Mot de passe COMMANDEMENT</label>
+        <input id="password" type="password" placeholder="Mot de passe">
+    </div>
 
     <button onclick="connect()">Entrer</button>
 </div>
 
 <script src="app-logic.js"></script>
-<script>
-function connect() {
-    currentUser.login = document.getElementById("login").value;
-    currentUser.nom   = document.getElementById("nom").value;
-    currentUser.grade = document.getElementById("grade").value;
-    currentUser.role  = document.getElementById("role").value;
 
-    // Exemple dans la barre
-    document.getElementById("grade-nom").textContent =
-        "GRADE NOM : " + currentUser.grade + " " + currentUser.nom;
+<script>
+// Affiche le champ mot de passe si COMMANDEMENT est choisi
+document.getElementById("role").addEventListener("change", function() {
+    if (this.value === "commandement") {
+        document.getElementById("password-box").style.display = "block";
+    } else {
+        document.getElementById("password-box").style.display = "none";
+    }
+});
+
+// Connexion
+function connect() {
+    const login = document.getElementById("login").value.trim();
+    const nom   = document.getElementById("nom").value.trim();
+    const grade = document.getElementById("grade").value.trim();
+    const role  = document.getElementById("role").value;
+
+    if (!login || !nom || !grade) {
+        alert("Veuillez remplir Login, Nom et Grade.");
+        return;
+    }
+
+    if (role === "commandement") {
+        const pwd = document.getElementById("password").value;
+        if (pwd !== "BLEU4ADMIN") {
+            alert("Mot de passe incorrect.");
+            return;
+        }
+    }
+
+    currentUser.login = login;
+    currentUser.nom   = nom;
+    currentUser.grade = grade;
+    currentUser.role  = role;
 
     window.location.href = "app.html";
 }
